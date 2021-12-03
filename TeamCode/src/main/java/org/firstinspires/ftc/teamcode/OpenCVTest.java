@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -15,6 +16,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvViewport;
+
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous
 public class OpenCVTest extends LinearOpMode {
@@ -50,7 +52,6 @@ public class OpenCVTest extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            telemetry.addData("Position: ", pipeline.getDetectionResults());
             telemetry.addData("Element Position: ", pipeline.getDetectionResults());
             telemetry.addData("Average 1: ", pipeline.averageS1);
             telemetry.addData("Average 2: ", pipeline.averageS2);
