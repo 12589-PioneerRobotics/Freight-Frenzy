@@ -2,6 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Point;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.opencv.core.Scalar;
 
 public class FieldConstants {
@@ -12,36 +16,29 @@ public class FieldConstants {
         RIGHT
     }
 
-    public static double ticksToInch = 0; // To be tested
-
-    public static Point fieldMaximum = new Point(0, 0); // Dependent on the RoadRunner Library
+    public static int maximumX = 72;
+    public static int maximumY = 72;
+    public static int minimumX = -72;
+    public static int minimumY = -72;
 
     // All coordinate values should be mapped in inches(unfortunately) from their position relative to the origin
 
-    public static Point blueLeftElement1 = new Point(0, 0);
-    public static Point blueCenterElement1 = new Point(0, 0);
-    public static Point blueRightElement1 = new Point(0, 0);
-    public static Point blueLeftElement2 = new Point(0, 0);
-    public static Point blueCenterElement2 = new Point(0, 0);
-    public static Point blueRightElement2 = new Point(0, 0);
+    public static Pose2d redCarouselStart = new Pose2d(-60.75, 34.5, Math.toRadians(0));
+    public static Pose2d redWarehouseStart = new Pose2d(-68, -20, Math.toRadians(0));
+    public static Pose2d blueCarouselStart = new Pose2d(68, 36, Math.toRadians(180));
+    public static Pose2d blueWarehouseStart = new Pose2d(68, -20, Math.toRadians(180));
 
-    public static Point redLeftElement1 = new Point(0, 0);
-    public static Point redCenterElement1 = new Point(0, 0);
-    public static Point redRightElement1 = new Point(0, 0);
-    public static Point redLeftElement2 = new Point(0, 0);
-    public static Point redCenterElement2 = new Point(0, 0);
-    public static Point redRightElement2 = new Point(0, 0);
+    public static Pose2d redCarousel = new Pose2d(0, 0, Math.toRadians(45));
+    public static Vector2d blueCarousel = new Vector2d(0, 0);
 
-    public static Point blueBeacon = new Point(0, 0);
-    public static Point redBeacon = new Point(0, 0);
+    public static Vector2d redDepot = new Vector2d(-34.5, 57.5);
+    public static Vector2d blueDepot = new Vector2d(34.5, 57.5);
 
-    public static Point blueCarousel = new Point(0, 0);
-    public static Point redCarousel = new Point(0, 0);
+    public static Vector2d redWarehouse = new Vector2d(-46, -46);
+    public static Vector2d blueWarehouse = new Vector2d(46, -46);
 
-    public static Point mutualBeacon = new Point(0, 0);
-
-    public static Scalar elementColor = new Scalar(0, 0, 0); // To be determined
-
+    public static Vector2d redShippingHub = new Vector2d(-23, 11.5);
+    public static Vector2d blueShippingHub = new Vector2d(23, 11.5);
 
 
 }

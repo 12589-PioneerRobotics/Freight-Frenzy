@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.drive;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import java.util.HashMap;
 
 public class Actuation {
     SampleMecanumDrive drive;
@@ -15,36 +18,50 @@ public class Actuation {
     public Servo depositor, blocker;
     LinearOpMode linearOpMode;
     OpMode opMode;
-    double slideHeightLimit;
-    final double depositorClose = 0.70;
-    final double depositorOpen = 0.3;
-    final double blockerClose = 0.59;
-    final double blockerOpen = 0.1;
+    HashMap<Integer, Integer> slidePositionMap;
+
+    final int slideHeightLimit = 2210;
+    final int slideMidPos = 1210;
+    final int slideBottomPos = 600;
+    final int slideInitPos = 0;
+    final double depositorClose = 1.00;
+    final double depositorOpen = 0.65;
+    final double blockerClose = 0.50;
+    final double blockerOpen = 0.10;
+    final double intakeVelocity = 2000.0;
+    final double slidePower = 0.70;
+    final double carouselPower = 0.80;
     final double intakePower = 0.7;
-    final double slidePower = 0.5;
 
     public Actuation(SampleMecanumDrive drive, LinearOpMode linearOpMode, OpMode opMode, HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
         this.drive = drive;
         this.linearOpMode = linearOpMode;
         this.opMode = opMode;
+        slidePositionMap = new HashMap<>(3);
 
         if(hardwareMap.dcMotor.contains("intake")){
             intake = hardwareMap.get(DcMotorEx.class, "intake");
             intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
         if(hardwareMap.dcMotor.contains("slide")){
             slide = hardwareMap.get(DcMotorEx.class, "slide");
-            slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            slide.setTargetPosition(slideInitPos);
+            slide.setTargetPositionTolerance(5);
+            slide.setPower(slidePower);
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            slidePositionMap.put(1, slideBottomPos);
+            slidePositionMap.put(2, slideMidPos);
+            slidePositionMap.put(3, slideHeightLimit);
         }
 
         if(hardwareMap.dcMotor.contains("carousel")){
             carousel = hardwareMap.get(DcMotorEx.class, "carousel");
-            carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            carousel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            carousel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
         if(hardwareMap.servo.contains("depositor")){
@@ -82,10 +99,11 @@ public class Actuation {
         depositor.setPosition(depositorClose);
     }
 
+
     public void intake(){
         if(intake == null)
             return;
-        intake.setPower(intakePower);
+        intake.setVelocity(-intakeVelocity);
     }
 
     public void stopIntake(){
@@ -95,7 +113,7 @@ public class Actuation {
     public void spitOut(){
         if(intake == null)
             return;
-        intake.setPower(-intakePower);
+        intake.setVelocity(intakeVelocity);
     }
 
     public void slideUp(){
@@ -110,9 +128,40 @@ public class Actuation {
         slide.setPower(-slidePower);
     }
 
-    public void stopSlide(){
-        slide.setPower(0);
+//    public void stopSlide(){
+//        slide.setPower(0);
+//    }
+
+    public void slideAction(int position){
+        if(slide == null)
+            return;
+        slide.setTargetPosition(slidePositionMap.get(position));
     }
+
+    public void slideReset(){
+        if(slide == null)
+            return;
+        slide.setTargetPosition(slideInitPos);
+    }
+
+    public void carouselSpinRed(){
+        if(carousel == null)
+            return;
+        carousel.setPower(-1);
+    }
+
+    public void carouselSpinBlue(){
+        if(carousel == null)
+            return;
+        carousel.setPower(0.5);
+    }
+
+    public void stopCarousel(){
+        if(carousel == null)
+            return;
+        carousel.setPower(0);
+    }
+
 
 
 }

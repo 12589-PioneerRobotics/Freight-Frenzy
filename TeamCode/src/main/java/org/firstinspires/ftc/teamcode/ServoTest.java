@@ -8,18 +8,22 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.drive.GamepadEventPS;
+
 @TeleOp
 public class ServoTest extends OpMode{
 
 
     Servo depositor, blocker;
+    GamepadEventPS gamepadEvent;
     double depoPos = 0;
     double blockPos = 0;
-    double increment = 0.01;
+    double increment = 0.05;
 
 
 
     public void init(){
+        gamepadEvent = new GamepadEventPS(gamepad1);
         depositor = hardwareMap.get(Servo.class, "depositor");
         blocker = hardwareMap.get(Servo.class, "blocker");
         depositor.setPosition(0);
@@ -30,13 +34,13 @@ public class ServoTest extends OpMode{
 
     @Override
     public void loop(){
-            if(gamepad1.dpad_up)
+            if(gamepadEvent.dPadUp())
                 depoPos += increment;
-            if(gamepad1.dpad_down)
+            if(gamepadEvent.dPadDown())
                 depoPos -= increment;
-            if (gamepad1.triangle)
+            if (gamepadEvent.triangle())
                 blockPos += increment;
-            if(gamepad1.cross)
+            if(gamepadEvent.cross())
                 blockPos -= increment;
 
             depositor.setPosition(depoPos);
