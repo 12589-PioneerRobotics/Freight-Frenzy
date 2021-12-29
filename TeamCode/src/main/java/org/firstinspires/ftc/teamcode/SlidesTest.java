@@ -15,12 +15,10 @@ public class SlidesTest extends OpMode {
     SampleMecanumDrive drive;
     GamepadEventPS gamepadEvent;
     DcMotorEx slide;
-    int targetPosition = 800;
-    float servoPosition;
+    int targetPosition = 0;
 
     Actuation actuation;
 
-    Servo depositor;
 
     @Override
     public void init() {
@@ -32,14 +30,10 @@ public class SlidesTest extends OpMode {
         slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         gamepadEvent = new GamepadEventPS(gamepad1);
 
-        drive = new SampleMecanumDrive(hardwareMap);
-        actuation = new Actuation(drive, null, this, hardwareMap);
-
-        depositor = hardwareMap.get(Servo.class, "depositor");
-        servoPosition = 1;
-
         telemetry.addLine("Initialized!");
     }
+
+
 
     @Override
     public void loop() {
@@ -51,28 +45,9 @@ public class SlidesTest extends OpMode {
         else if(gamepadEvent.rightBumper())
             slide.setTargetPosition(targetPosition);
 
-        if(gamepadEvent.dPadLeft())
-            servoPosition -= 0.05;
-        else if(gamepadEvent.dPadRight())
-            servoPosition += 0.05;
-
-        depositor.setPosition(servoPosition);
-
-        if(gamepad1.right_trigger > 0.5){
-            actuation.blockerOpen();
-            actuation.intake();
-        }
-        else if(gamepad1.left_trigger > 0.5) {
-            actuation.blockerClose();
-            actuation.spitOut();
-        }
-        else
-            actuation.stopIntake();
 
         telemetry.addData("Target Position: ", targetPosition);
         telemetry.addData("Current Position: ", slide.getCurrentPosition());
-        telemetry.addData("Target Depositor Position: ", servoPosition);
-        telemetry.addData("Current Depositor Position: ", depositor.getPosition());
         telemetry.update();
 
     }

@@ -19,6 +19,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous
 public class Autonomous extends LinearOpMode{
     Actuation actuation;
     SampleMecanumDrive drive;
@@ -45,11 +46,6 @@ public class Autonomous extends LinearOpMode{
                 .lineToLinearHeading(FieldConstants.redCarousel)
                 .build();
 
-        Trajectory toPark = drive.trajectoryBuilder(new Pose2d(FieldConstants.redShippingHub.getX(), FieldConstants.redShippingHub.getY()
-                , Math.toRadians(225)))
-                .strafeTo(FieldConstants.redDepot)
-                .build();
-
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -62,22 +58,13 @@ public class Autonomous extends LinearOpMode{
 
             }
         });
-
-        telemetry.addLine("Waiting for start");
-        telemetry.update();
-
-        waitForStart();
-
-        Trajectory toHub = drive.trajectoryBuilder(toCarousel.end())
-                .lineToLinearHeading(new Pose2d(FieldConstants.redShippingHub.getX(), FieldConstants.redShippingHub.getY()
-                , Math.toRadians(225)))
-                .build();
-
+/*
         sleep(100);
         elementPosition = pipeline.getDetectionResults();
         sleep(200);
-
-        switch (elementPosition){
+        elementPosition = pipeline.getDetectionResults();
+*/
+        switch (pipeline.getDetectionResults()){
             case LEFT:
                 slidePosition = 1;
             case CENTER:
@@ -85,6 +72,18 @@ public class Autonomous extends LinearOpMode{
             case RIGHT:
                 slidePosition = 3;
         }
+
+        telemetry.addLine("Waiting for start");
+        telemetry.addData("Element Position: ", elementPosition);
+        telemetry.update();
+
+        waitForStart();
+
+        Trajectory toHub = drive.trajectoryBuilder(toCarousel.end())
+                .lineToLinearHeading(new Pose2d(FieldConstants.redShippingHub.getX() - 4, FieldConstants.redShippingHub.getY() + 4
+                , Math.toRadians(135)))
+                .build();
+
 
         camera.closeCameraDevice();
 
@@ -95,14 +94,20 @@ public class Autonomous extends LinearOpMode{
         actuation.stopCarousel();
         sleep(200);
 
-        drive.followTrajectoryAsync(toHub);
-        actuation.slideAction(slidePosition);
-
-        actuation.depositorOpen();
-        sleep(500);
-        actuation.depositorClose();
-
         drive.followTrajectory(toHub);
+        actuation.slideAction(slidePosition);
+        sleep(500);
+        actuation.depositorOpen();
+        sleep(1500);
+        actuation.depositorClose();
+        sleep(200);
+
+        Trajectory toPark = drive.trajectoryBuilder(toHub.end())
+                .lineToSplineHeading(new Pose2d(FieldConstants.redDepot.getX(), FieldConstants.redDepot.getY(), Math.toRadians(-90)))
+                .build();
+
+        actuation.slideReset();
+        drive.followTrajectory(toPark);
     }
 
 
@@ -114,10 +119,10 @@ class Pipeline extends OpenCvPipeline {
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
-    static final Point topAnchor1 = new Point(109, 160);
-    static final Point topAnchor2 = new Point(300, 160);
-    static final Point bottomAnchor1 = new Point(topAnchor1.x + 10, topAnchor1.y + 10);
-    static final Point bottomAnchor2 = new Point(topAnchor2.x + 10, topAnchor2.y + 10);
+    static final Point topAnchor1 = new Point(40, 240);
+    static final Point topAnchor2 = new Point(290, 240);
+    static final Point bottomAnchor1 = new Point(topAnchor1.x + 40, topAnchor1.y + 40);
+    static final Point bottomAnchor2 = new Point(topAnchor2.x + 40, topAnchor2.y + 40);
 
     FieldConstants.ShippingElementPosition position = FieldConstants.ShippingElementPosition.LEFT;
     Mat hls = new Mat();
@@ -148,7 +153,7 @@ class Pipeline extends OpenCvPipeline {
         Imgproc.rectangle(input, topAnchor1, bottomAnchor1, GREEN, 1);
         Imgproc.rectangle(input, topAnchor2, bottomAnchor2, BLUE, 1);
 
-        if(averageS1 > 200 && averageS2 > 200){
+        if(averageS1 > 100 && averageS2 > 100){
             if(averageH1 > 20 && averageH1 < 24)
                 position = FieldConstants.ShippingElementPosition.LEFT;
             else if(averageH2 > 20 && averageH2 < 24)
@@ -157,9 +162,9 @@ class Pipeline extends OpenCvPipeline {
                 position = FieldConstants.ShippingElementPosition.RIGHT;
         }
 
-        else if(averageS1 > 200)
+        else if(averageS1 > 100)
             position = FieldConstants.ShippingElementPosition.LEFT;
-        else if(averageS2 > 200)
+        else if(averageS2 > 100)
             position = FieldConstants.ShippingElementPosition.CENTER;
         else
             position = FieldConstants.ShippingElementPosition.RIGHT;

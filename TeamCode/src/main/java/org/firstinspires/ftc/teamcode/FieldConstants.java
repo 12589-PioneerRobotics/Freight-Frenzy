@@ -23,15 +23,15 @@ public class FieldConstants {
 
     // All coordinate values should be mapped in inches(unfortunately) from their position relative to the origin
 
-    public static Pose2d redCarouselStart = new Pose2d(-60.75, 34.5, Math.toRadians(0));
+    public static Pose2d redCarouselStart = new Pose2d(-59.75, 35.5, Math.toRadians(0));
     public static Pose2d redWarehouseStart = new Pose2d(-68, -20, Math.toRadians(0));
     public static Pose2d blueCarouselStart = new Pose2d(68, 36, Math.toRadians(180));
     public static Pose2d blueWarehouseStart = new Pose2d(68, -20, Math.toRadians(180));
 
-    public static Pose2d redCarousel = new Pose2d(0, 0, Math.toRadians(45));
+    public static Pose2d redCarousel = new Pose2d(-57.5, 60, Math.toRadians(-50));
     public static Vector2d blueCarousel = new Vector2d(0, 0);
 
-    public static Vector2d redDepot = new Vector2d(-34.5, 57.5);
+    public static Vector2d redDepot = new Vector2d(-30, 60);
     public static Vector2d blueDepot = new Vector2d(34.5, 57.5);
 
     public static Vector2d redWarehouse = new Vector2d(-46, -46);

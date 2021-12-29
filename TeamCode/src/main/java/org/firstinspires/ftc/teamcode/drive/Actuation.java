@@ -20,14 +20,14 @@ public class Actuation {
     OpMode opMode;
     HashMap<Integer, Integer> slidePositionMap;
 
-    final int slideHeightLimit = 2210;
-    final int slideMidPos = 1210;
-    final int slideBottomPos = 600;
+    final int slideHeightLimit = 700;
+    final int slideMidPos = 400;
+    final int slideBottomPos = 200;
     final int slideInitPos = 0;
-    final double depositorClose = 1.00;
-    final double depositorOpen = 0.65;
+    final double depositorClose = 0.85;
+    final double depositorOpen = 0.40;
     final double blockerClose = 0.50;
-    final double blockerOpen = 0.10;
+    final double blockerOpen = 0.05;
     final double intakeVelocity = 2000.0;
     final double slidePower = 0.70;
     final double carouselPower = 0.80;
@@ -39,6 +39,9 @@ public class Actuation {
         this.linearOpMode = linearOpMode;
         this.opMode = opMode;
         slidePositionMap = new HashMap<>(3);
+        slidePositionMap.put(1, slideBottomPos);
+        slidePositionMap.put(2, slideMidPos);
+        slidePositionMap.put(3, slideHeightLimit);
 
         if(hardwareMap.dcMotor.contains("intake")){
             intake = hardwareMap.get(DcMotorEx.class, "intake");
@@ -54,9 +57,6 @@ public class Actuation {
             slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            slidePositionMap.put(1, slideBottomPos);
-            slidePositionMap.put(2, slideMidPos);
-            slidePositionMap.put(3, slideHeightLimit);
         }
 
         if(hardwareMap.dcMotor.contains("carousel")){
@@ -147,13 +147,13 @@ public class Actuation {
     public void carouselSpinRed(){
         if(carousel == null)
             return;
-        carousel.setPower(-1);
+        carousel.setPower(1);
     }
 
     public void carouselSpinBlue(){
         if(carousel == null)
             return;
-        carousel.setPower(0.5);
+        carousel.setPower(-1.0);
     }
 
     public void stopCarousel(){
