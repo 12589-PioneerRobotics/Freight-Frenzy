@@ -21,6 +21,7 @@ public class CVTesting extends OpMode {
     FieldConstants.ShippingElementPosition elementPosition;
     TelemetryPacket packet;
 
+
     @Override
     public void init() {
         cameraViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -48,17 +49,18 @@ public class CVTesting extends OpMode {
     @Override
     public void loop() {
         FtcDashboard.getInstance().startCameraStream(camera, 0);
+        elementPosition = pipeline.getDetectionResults();
 
-        switch (pipeline.getDetectionResults()) {
-            case LEFT:
-                slidePosition = 1;
-            case CENTER:
-                slidePosition = 2;
-            case RIGHT:
-                slidePosition = 3;
-        }
+
+
+
 
         telemetry.addData("Position: ", slidePosition);
+        telemetry.addData("Element Position: ", pipeline.getDetectionResults());
+        telemetry.addData("SAverage 1: ", pipeline.averageS1);
+        telemetry.addData("SAverage 2: ", pipeline.averageS2);
+        telemetry.addData("HAverage 1: ", pipeline.averageH1);
+        telemetry.addData("HAverage 2: ", pipeline.averageH2);
         telemetry.update();
     }
 }

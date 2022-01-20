@@ -64,17 +64,21 @@ public class Autonomous extends LinearOpMode{
         sleep(200);
         elementPosition = pipeline.getDetectionResults();
 */
-        switch (pipeline.getDetectionResults()){
-            case LEFT:
-                slidePosition = 1;
-            case CENTER:
-                slidePosition = 2;
-            case RIGHT:
-                slidePosition = 3;
-        }
+        elementPosition = pipeline.getDetectionResults();
+
+        if (elementPosition == FieldConstants.ShippingElementPosition.LEFT)
+            slidePosition = 1;
+        else if (elementPosition == FieldConstants.ShippingElementPosition.CENTER)
+            slidePosition = 2;
+        else if (elementPosition == FieldConstants.ShippingElementPosition.RIGHT)
+            slidePosition = 3;
 
         telemetry.addLine("Waiting for start");
         telemetry.addData("Element Position: ", elementPosition);
+        telemetry.addData("SAverage 1: ", pipeline.averageS1);
+        telemetry.addData("SAverage 2: ", pipeline.averageS2);
+        telemetry.addData("HAverage 1: ", pipeline.averageH1);
+        telemetry.addData("HAverage 2: ", pipeline.averageH2);
         telemetry.update();
 
         waitForStart();
@@ -151,29 +155,27 @@ class Pipeline extends OpenCvPipeline {
         averageS2 = Core.mean(region2).val[2];
 
 
+
         Imgproc.rectangle(input, topAnchor1, bottomAnchor1, BLUE, 1);
         Imgproc.rectangle(input, topAnchor2, bottomAnchor2, BLUE, 1);
 
-        if(averageS1 > 100 && averageS2 > 100){
-            if(averageH1 > 20 && averageH1 < 24)
+        if(averageS1 > 80 && averageS2 > 80){
+            if(averageH1 > 60 && averageH1 < 75)
                 position = FieldConstants.ShippingElementPosition.LEFT;
-            else if(averageH2 > 20 && averageH2 < 24) {
+            else if(averageH2 > 60 && averageH2 < 75) {
                 position = FieldConstants.ShippingElementPosition.CENTER;
-                Imgproc.rectangle(input, topAnchor1, bottomAnchor1, GREEN, 1);
             }
             else
-                position = FieldConstants.ShippingElementPosition.LEFT;
-                position = FieldConstants.ShippingElementPosition.LEFT;
+                position = FieldConstants.ShippingElementPosition.RIGHT;
         }
 
-        else if(averageS1 > 100)
+        else if(averageS1 > 80)
             position = FieldConstants.ShippingElementPosition.LEFT;
-        else if(averageS2 > 100) {
+        else if(averageS2 > 80) {
             position = FieldConstants.ShippingElementPosition.CENTER;
-            Imgproc.rectangle(input, topAnchor1, bottomAnchor1, GREEN, 1);
         }
         else
-            position = FieldConstants.ShippingElementPosition.LEFT;
+            position = FieldConstants.ShippingElementPosition.RIGHT;
 
 
 
