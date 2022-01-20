@@ -24,8 +24,8 @@ public class Actuation {
     final int slideMidPos = 400;
     final int slideBottomPos = 200;
     final int slideInitPos = 0;
-    final double depositorClose = 0.85;
-    final double depositorOpen = 0.40;
+    public final double depositorClose = 0.85;
+    public final double depositorOpen = 0.40;
     final double blockerClose = 0.50;
     final double blockerOpen = 0.05;
     final double intakeVelocity = 2000.0;
@@ -99,6 +99,11 @@ public class Actuation {
         depositor.setPosition(depositorClose);
     }
 
+    public void setDepositorPosition(double position) {
+        if(depositor == null)
+            return;
+        depositor.setPosition(position);
+    }
 
     public void intake(){
         if(intake == null)

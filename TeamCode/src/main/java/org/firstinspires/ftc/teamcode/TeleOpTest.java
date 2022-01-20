@@ -5,9 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.Actuation;
 import org.firstinspires.ftc.teamcode.drive.GamepadEventPS;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -18,15 +20,26 @@ public class TeleOpTest extends OpMode {
     SampleMecanumDrive drive;
     Actuation actuation;
     GamepadEventPS gamepadEvent1, gamepadEvent2;
-    int slidePosition;
+    DcMotorEx slide;
+    int targetSlidePosition;
+    int resetPosition;
 
+    boolean depositorOpen;
 
     @Override
     public void init() {
-        slidePosition = 1;
+        depositorOpen = false;
+        targetSlidePosition = 1;
+        resetPosition = -90; // Lower numbers mean less slack on the slides string (very unintuitive i know, but it works)
         gamepadEvent1 = new GamepadEventPS(gamepad1);
         gamepadEvent2 = new GamepadEventPS(gamepad2);
         drive = new SampleMecanumDrive(hardwareMap);
+        slide = hardwareMap.get(DcMotorEx.class, "slide");
+        slide.setTargetPosition(targetSlidePosition);
+        slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slide.setPower(0.7);
+        slide.setTargetPositionTolerance(5);
+        slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         actuation = new Actuation(drive, null, this, hardwareMap);
         telemetry.addLine("Initialized!");
     }
@@ -53,45 +66,46 @@ public class TeleOpTest extends OpMode {
        else
            actuation.stopIntake();
 
-       if(gamepad2.right_bumper)
-           actuation.depositorOpen();
-       else
-           actuation.depositorClose();
+       if(gamepadEvent1.rightBumper()) {
+           if(!depositorOpen)
+               actuation.depositorOpen();
+           else actuation.setDepositorPosition(0.75);
+
+           depositorOpen = !depositorOpen;
+        }
 
 
-
-       setSlidePosition();
-       if(gamepadEvent2.cross())
-           actuation.slideAction(1);
-       else if(gamepadEvent2.circle())
-           actuation.slideAction(2);
-       else if(gamepadEvent2.triangle())
-           actuation.slideAction(3);
-       else if(gamepadEvent2.square())
-           actuation.slideReset();
+        //
+        setSlidePosition();
+        if(gamepadEvent1.leftBumper()) {
+            actuation.setDepositorPosition(0.75);
+            slide.setTargetPosition(targetSlidePosition * 200);
+        }
+        if(gamepadEvent1.dPadLeft()) {
+            actuation.depositorClose();
+            slide.setTargetPosition(resetPosition);
+        }
 
        if(gamepad2.right_trigger > 0.5)
            actuation.carouselSpinRed();
-       else
-           actuation.stopCarousel();
-
-        if(gamepad2.left_trigger > 0.5)
+        else if(gamepad2.left_trigger > 0.5)
             actuation.carouselSpinBlue();
         else
             actuation.stopCarousel();
 
-       telemetry.addData("Target Slide Position", slidePosition);
+       telemetry.addData("Target Slide Position", targetSlidePosition);
+       telemetry.addData("Current Position: ", slide.getCurrentPosition());
        telemetry.update();
     }
 
-    private void setSlidePosition(){
-        if(gamepadEvent1.triangle()){
-            if(slidePosition < 3)
-                slidePosition++;
+   private void setSlidePosition(){
+        if(gamepadEvent1.dPadUp()){
+            if(targetSlidePosition < 3)
+                targetSlidePosition ++;
         }
-        else if(gamepadEvent1.cross()){
-            if(slidePosition > 1)
-                slidePosition--;
+        else if(gamepadEvent1.dPadDown()){
+            if(targetSlidePosition > 1)
+                targetSlidePosition --;
         }
     }
 

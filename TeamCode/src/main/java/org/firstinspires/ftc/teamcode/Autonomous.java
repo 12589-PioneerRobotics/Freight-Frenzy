@@ -121,8 +121,8 @@ class Pipeline extends OpenCvPipeline {
 
     static final Point topAnchor1 = new Point(40, 240);
     static final Point topAnchor2 = new Point(290, 240);
-    static final Point bottomAnchor1 = new Point(topAnchor1.x + 40, topAnchor1.y + 40);
-    static final Point bottomAnchor2 = new Point(topAnchor2.x + 40, topAnchor2.y + 40);
+    static final Point bottomAnchor1 = new Point(topAnchor1.x + 65, topAnchor1.y + 65);
+    static final Point bottomAnchor2 = new Point(topAnchor2.x + 65, topAnchor2.y + 65);
 
     FieldConstants.ShippingElementPosition position = FieldConstants.ShippingElementPosition.LEFT;
     Mat hls = new Mat();
@@ -150,31 +150,37 @@ class Pipeline extends OpenCvPipeline {
         averageS1 = Core.mean(region1).val[2];
         averageS2 = Core.mean(region2).val[2];
 
-        Imgproc.rectangle(input, topAnchor1, bottomAnchor1, GREEN, 1);
+
+        Imgproc.rectangle(input, topAnchor1, bottomAnchor1, BLUE, 1);
         Imgproc.rectangle(input, topAnchor2, bottomAnchor2, BLUE, 1);
 
         if(averageS1 > 100 && averageS2 > 100){
             if(averageH1 > 20 && averageH1 < 24)
                 position = FieldConstants.ShippingElementPosition.LEFT;
-            else if(averageH2 > 20 && averageH2 < 24)
+            else if(averageH2 > 20 && averageH2 < 24) {
                 position = FieldConstants.ShippingElementPosition.CENTER;
+                Imgproc.rectangle(input, topAnchor1, bottomAnchor1, GREEN, 1);
+            }
             else
-                position = FieldConstants.ShippingElementPosition.RIGHT;
+                position = FieldConstants.ShippingElementPosition.LEFT;
+                position = FieldConstants.ShippingElementPosition.LEFT;
         }
 
         else if(averageS1 > 100)
             position = FieldConstants.ShippingElementPosition.LEFT;
-        else if(averageS2 > 100)
+        else if(averageS2 > 100) {
             position = FieldConstants.ShippingElementPosition.CENTER;
+            Imgproc.rectangle(input, topAnchor1, bottomAnchor1, GREEN, 1);
+        }
         else
-            position = FieldConstants.ShippingElementPosition.RIGHT;
+            position = FieldConstants.ShippingElementPosition.LEFT;
+
+
 
         return input;
 
     }
 
-    public FieldConstants.ShippingElementPosition getDetectionResults(){
-        return position;
-    }
+    public FieldConstants.ShippingElementPosition getDetectionResults() { return position; }
 
 }
