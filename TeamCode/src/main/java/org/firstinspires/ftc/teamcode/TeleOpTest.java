@@ -30,7 +30,7 @@ public class TeleOpTest extends OpMode {
     public void init() {
         depositorOpen = false;
         targetSlidePosition = 1;
-        resetPosition = -90; // Lower numbers mean less slack on the slides string (very unintuitive i know, but it works)
+        resetPosition = -20; // Lower numbers mean less slack on the slides string (very unintuitive i know, but it works)
         gamepadEvent1 = new GamepadEventPS(gamepad1);
         gamepadEvent2 = new GamepadEventPS(gamepad2);
         drive = new SampleMecanumDrive(hardwareMap);
@@ -63,28 +63,34 @@ public class TeleOpTest extends OpMode {
            actuation.blockerClose();
            actuation.spitOut();
        }
-       else
+       else {
+           actuation.blockerClose();
            actuation.stopIntake();
+       }
 
-       if(gamepadEvent1.rightBumper()) {
-           if(!depositorOpen)
-               actuation.depositorOpen();
-           else actuation.setDepositorPosition(0.75);
-
-           depositorOpen = !depositorOpen;
-        }
+       if(gamepad1.right_bumper)
+           actuation.depositorOpen();
+       else
+           actuation.depositorClose();
 
 
         //
         setSlidePosition();
-        if(gamepadEvent1.leftBumper()) {
+        if(gamepadEvent1.triangle()) {
             actuation.setDepositorPosition(0.75);
-            slide.setTargetPosition(targetSlidePosition * 200);
+            actuation.slideAction(3);
         }
-        if(gamepadEvent1.dPadLeft()) {
-            actuation.depositorClose();
-            slide.setTargetPosition(resetPosition);
+        else if(gamepadEvent1.circle()) {
+            actuation.setDepositorPosition(0.75);
+            actuation.slideAction(2);
         }
+        else if(gamepadEvent1.cross()){
+            actuation.setDepositorPosition(0.75);
+            actuation.slideAction(1);
+        }
+        else if(gamepadEvent1.square())
+            actuation.slideReset();
+
 
        if(gamepad2.right_trigger > 0.5)
            actuation.carouselSpinRed();

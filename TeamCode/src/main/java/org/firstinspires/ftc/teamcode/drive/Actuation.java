@@ -24,7 +24,7 @@ public class Actuation {
     final int slideMidPos = 400;
     final int slideBottomPos = 200;
     final int slideInitPos = 0;
-    public final double depositorClose = 0.85;
+    public final double depositorClose = 0.82;
     public final double depositorOpen = 0.40;
     final double blockerClose = 0.50;
     final double blockerOpen = 0.05;

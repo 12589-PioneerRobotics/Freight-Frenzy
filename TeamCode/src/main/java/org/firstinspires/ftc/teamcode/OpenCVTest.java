@@ -37,7 +37,7 @@ public class OpenCVTest extends LinearOpMode {
             @Override
             public void onOpened() {
                 //testCam.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
-                testCam.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
+                testCam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override

@@ -51,7 +51,12 @@ public class CVTesting extends OpMode {
         FtcDashboard.getInstance().startCameraStream(camera, 0);
         elementPosition = pipeline.getDetectionResults();
 
-
+        if (elementPosition == FieldConstants.ShippingElementPosition.LEFT)
+            slidePosition = 1;
+        else if (elementPosition == FieldConstants.ShippingElementPosition.CENTER)
+            slidePosition = 2;
+        else if (elementPosition == FieldConstants.ShippingElementPosition.RIGHT)
+            slidePosition = 3;
 
 
 

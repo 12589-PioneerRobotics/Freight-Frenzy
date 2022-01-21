@@ -123,10 +123,10 @@ class Pipeline extends OpenCvPipeline {
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
-    static final Point topAnchor1 = new Point(40, 240);
-    static final Point topAnchor2 = new Point(290, 240);
-    static final Point bottomAnchor1 = new Point(topAnchor1.x + 65, topAnchor1.y + 65);
-    static final Point bottomAnchor2 = new Point(topAnchor2.x + 65, topAnchor2.y + 65);
+    static final Point topAnchor1 = new Point(10, 160);
+    static final Point topAnchor2 = new Point(270, 160);
+    static final Point bottomAnchor1 = new Point(topAnchor1.x + 50, topAnchor1.y + 50);
+    static final Point bottomAnchor2 = new Point(topAnchor2.x + 50, topAnchor2.y + 50);
 
     FieldConstants.ShippingElementPosition position = FieldConstants.ShippingElementPosition.LEFT;
     Mat hls = new Mat();
@@ -159,7 +159,7 @@ class Pipeline extends OpenCvPipeline {
         Imgproc.rectangle(input, topAnchor1, bottomAnchor1, BLUE, 1);
         Imgproc.rectangle(input, topAnchor2, bottomAnchor2, BLUE, 1);
 
-        if(averageS1 > 80 && averageS2 > 80){
+        if(averageS1 > 65 && averageS2 > 65){
             if(averageH1 > 60 && averageH1 < 75)
                 position = FieldConstants.ShippingElementPosition.LEFT;
             else if(averageH2 > 60 && averageH2 < 75) {
@@ -169,9 +169,9 @@ class Pipeline extends OpenCvPipeline {
                 position = FieldConstants.ShippingElementPosition.RIGHT;
         }
 
-        else if(averageS1 > 80)
+        else if(averageS1 > 65)
             position = FieldConstants.ShippingElementPosition.LEFT;
-        else if(averageS2 > 80) {
+        else if(averageS2 > 65) {
             position = FieldConstants.ShippingElementPosition.CENTER;
         }
         else
