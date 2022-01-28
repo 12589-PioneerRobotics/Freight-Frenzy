@@ -50,7 +50,6 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * is explained below.
  */
 @TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-@Disabled
 public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
   /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
    * the following 4 detectable objects
@@ -63,28 +62,13 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
    *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
    *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
    */
-    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
-    private static final String[] LABELS = {
-      "Ball",
-      "Cube",
-      "Duck",
-      "Marker"
-    };
+    //static String baseDir = android.os.Environment.getExternalStorageDirectory().getPath();
+    private static final String TFOD_MODEL_ASSET =  "/sdcard/FIRST/tflitemodels/model.tflite";
+    private static final String LABELS = "capstone";
 
-    /*
-     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
-     * web site at https://developer.vuforia.com/license-manager.
-     *
-     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
-     * random data. As an example, here is a example of a fragment of a valid key:
-     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
-     * Once you've obtained a license key, copy the string from the Vuforia web site
-     * and paste it in to your code on the next line, between the double quotes.
-     */
+
     private static final String VUFORIA_KEY =
-            " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
+            "Ab+AC0T/////AAABmR1rANfVh0JanGAWBhtq0ANMyyzZi10h60FX6iuoxcW/qPBTy1rXKspKlq3V4ep4LON60jQ6PUSxyglcJ6YLb0+eENqSmvrLRdj/4aa/yLsoBY3L9MlR9Ag0ZWJJmvDEZQsXQjT4EoMEZr3U/yuGLWHCMHkE6XwF0EOW0PdrOX0cUg/F2aR5VFnqUyPsGHDKN8ZwVstc5Xo3+fkFXc78bizylFJuIKWZnvon/wC7JMl5Ha2JOf42vL8jI1ZMJWJeSKUaUufLBVx+TtFLaHtgayuLUrZRFn2+apHpgCs26g+Ql6m2P7qCRtA49XQpT8f5Ig2HZR2whfLVLO0qkLK8gC+CggTHY3HkzL5w3mSIv0Oz";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -155,13 +139,13 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
      * Initialize the Vuforia localization engine.
      */
     private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
+
+         // Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "webcam1");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -176,10 +160,10 @@ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
             "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-       tfodParameters.minResultConfidence = 0.8f;
+       tfodParameters.minResultConfidence = 0.5f;
        tfodParameters.isModelTensorFlow2 = true;
-       tfodParameters.inputSize = 320;
+       tfodParameters.inputSize = 640;
        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-       tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+       tfod.loadModelFromFile(TFOD_MODEL_ASSET, LABELS);
     }
 }

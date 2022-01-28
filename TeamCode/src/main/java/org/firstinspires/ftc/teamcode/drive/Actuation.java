@@ -61,7 +61,7 @@ public class Actuation {
 
         if(hardwareMap.dcMotor.contains("carousel")){
             carousel = hardwareMap.get(DcMotorEx.class, "carousel");
-            carousel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            carousel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
         if(hardwareMap.servo.contains("depositor")){
@@ -152,13 +152,13 @@ public class Actuation {
     public void carouselSpinRed(){
         if(carousel == null)
             return;
-        carousel.setPower(1);
+        carousel.setPower(0.5);
     }
 
     public void carouselSpinBlue(){
         if(carousel == null)
             return;
-        carousel.setPower(-1.0);
+        carousel.setPower(-1);
     }
 
     public void stopCarousel(){

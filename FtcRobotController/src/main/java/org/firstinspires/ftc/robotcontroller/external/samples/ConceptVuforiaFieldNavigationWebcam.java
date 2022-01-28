@@ -79,20 +79,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 @Disabled
 public class ConceptVuforiaFieldNavigationWebcam extends LinearOpMode {
 
-    /*
-     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
-     * web site at https://developer.vuforia.com/license-manager.
-     *
-     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
-     * random data. As an example, here is a example of a fragment of a valid key:
-     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
-     * Once you've obtained a license key, copy the string from the Vuforia web site
-     * and paste it in to your code on the next line, between the double quotes.
-     */
+
     private static final String VUFORIA_KEY =
-            "AYh41nT/////AAABmeWEHUIvZ0VthechFnfCAd+JLfaNQ+Ea1LXo/K4/rTvsHNEMCVwrZYnUoFW6JBa5etyUOVfkScvFJgCXF8j6VYgHmcIbACuAuHcVOalh9i2QKsAbrqa2O4jmlypCw6DuQ1Yk/Suz+Ze9QTkAZm+EP/Ouit/2XSouG6AzkMbwet0B9XExr4qwXIRb1TZ0WW1QcmHI8Kc2M/RFJ6QrRWzZ1FwOu82qm6xk0e8SSbU9DPpWc5aCC+jTvDTB/4s5UMZmoth2kbkhxxvRB+gugfXlkn6vbrCz0f10MI6ZGNnZjqaTgvKzSenNJZNz8lVysNDjFfDR9wqnh65KLJZhCFaOtnacPMuqrcd3TYbD9v0+HOsm";
+            "Ab+AC0T/////AAABmR1rANfVh0JanGAWBhtq0ANMyyzZi10h60FX6iuoxcW/qPBTy1rXKspKlq3V4ep4LON60jQ6PUSxyglcJ6YLb0+eENqSmvrLRdj/4aa/yLsoBY3L9MlR9Ag0ZWJJmvDEZQsXQjT4EoMEZr3U/yuGLWHCMHkE6XwF0EOW0PdrOX0cUg/F2aR5VFnqUyPsGHDKN8ZwVstc5Xo3+fkFXc78bizylFJuIKWZnvon/wC7JMl5Ha2JOf42vL8jI1ZMJWJeSKUaUufLBVx+TtFLaHtgayuLUrZRFn2+apHpgCs26g+Ql6m2P7qCRtA49XQpT8f5Ig2HZR2whfLVLO0qkLK8gC+CggTHY3HkzL5w3mSIv0Oz";
 
     // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here

@@ -63,7 +63,7 @@ public class Autonomous extends LinearOpMode{
         elementPosition = pipeline.getDetectionResults();
         sleep(200);
         elementPosition = pipeline.getDetectionResults();
-*/
+
         elementPosition = pipeline.getDetectionResults();
 
         if (elementPosition == FieldConstants.ShippingElementPosition.LEFT)
@@ -73,7 +73,34 @@ public class Autonomous extends LinearOpMode{
         else if (elementPosition == FieldConstants.ShippingElementPosition.RIGHT)
             slidePosition = 3;
 
+
+ */
+        telemetry.addData("Element Position: ", pipeline.getDetectionResults());
         telemetry.addLine("Waiting for start");
+        telemetry.update();
+
+        waitForStart();
+
+        sleep(100);
+
+        elementPosition = pipeline.getDetectionResults();
+
+        switch(elementPosition){
+            case LEFT:
+                slidePosition = 1;
+                break;
+            case CENTER:
+                slidePosition = 2;
+                break;
+            case RIGHT:
+                slidePosition = 3;
+                break;
+            default:
+                slidePosition = 3;
+                break;
+        }
+
+
         telemetry.addData("Element Position: ", elementPosition);
         telemetry.addData("SAverage 1: ", pipeline.averageS1);
         telemetry.addData("SAverage 2: ", pipeline.averageS2);
@@ -81,11 +108,10 @@ public class Autonomous extends LinearOpMode{
         telemetry.addData("HAverage 2: ", pipeline.averageH2);
         telemetry.update();
 
-        waitForStart();
 
         Trajectory toHub = drive.trajectoryBuilder(toCarousel.end())
-                .lineToLinearHeading(new Pose2d(FieldConstants.redShippingHub.getX() - 4, FieldConstants.redShippingHub.getY() + 4
-                , Math.toRadians(135)))
+                .lineToLinearHeading(new Pose2d(FieldConstants.redShippingHub.getX() - 13, FieldConstants.redShippingHub.getY()
+                , Math.toRadians(225)))
                 .build();
 
 
@@ -107,7 +133,7 @@ public class Autonomous extends LinearOpMode{
         sleep(200);
 
         Trajectory toPark = drive.trajectoryBuilder(toHub.end())
-                .lineToSplineHeading(new Pose2d(FieldConstants.redDepot.getX(), FieldConstants.redDepot.getY(), Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(FieldConstants.redDepot.getX(), FieldConstants.redDepot.getY(), Math.toRadians(0)))
                 .build();
 
         actuation.slideReset();
@@ -159,7 +185,7 @@ class Pipeline extends OpenCvPipeline {
         Imgproc.rectangle(input, topAnchor1, bottomAnchor1, BLUE, 1);
         Imgproc.rectangle(input, topAnchor2, bottomAnchor2, BLUE, 1);
 
-        if(averageS1 > 65 && averageS2 > 65){
+        if(averageS1 > 70 && averageS2 > 70){
             if(averageH1 > 60 && averageH1 < 75)
                 position = FieldConstants.ShippingElementPosition.LEFT;
             else if(averageH2 > 60 && averageH2 < 75) {
@@ -169,9 +195,9 @@ class Pipeline extends OpenCvPipeline {
                 position = FieldConstants.ShippingElementPosition.RIGHT;
         }
 
-        else if(averageS1 > 65)
+        else if(averageS1 > 70)
             position = FieldConstants.ShippingElementPosition.LEFT;
-        else if(averageS2 > 65) {
+        else if(averageS2 > 70) {
             position = FieldConstants.ShippingElementPosition.CENTER;
         }
         else

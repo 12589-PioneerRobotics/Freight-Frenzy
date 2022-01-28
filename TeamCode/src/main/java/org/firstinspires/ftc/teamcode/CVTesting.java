@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -20,6 +21,11 @@ public class CVTesting extends OpMode {
     OpenCvCamera camera;
     FieldConstants.ShippingElementPosition elementPosition;
     TelemetryPacket packet;
+    private static final String TFOD_MODEL_ASSET = "model.tflite";
+    private static final String[] LABELS = {
+            "capstone"
+    };
+    private TFObjectDetector tfod;
 
 
     @Override

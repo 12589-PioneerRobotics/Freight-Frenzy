@@ -32,8 +32,7 @@ public class DriveConstants {
      * from DriveVelocityPIDTuner.
      */
     public static final boolean RUN_USING_ENCODER = true;
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
-            getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(18, 0, 10, 13.5);
 
     /*
      * These are physical constants that can be determined from your robot (including the track
@@ -43,9 +42,9 @@ public class DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    public static double WHEEL_RADIUS = 1.89; // in
+    public static double WHEEL_RADIUS = 1.88976; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed // tested: 1.174448
-    public static double TRACK_WIDTH = 17.6; // 21.200000000000042069 tested
+    public static double TRACK_WIDTH = 15.2; // 21.200000000000042069 tested
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -53,8 +52,8 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.018;// tested: 0.02
-    public static double kA = 0.003; // tested: 0.0043
+    public static double kV = 1.0 / rpmToVelocity(MAX_RPM);// tested: 0.02
+    public static double kA = 0; // tested: 0.0043
     public static double kStatic = 0; //tested: 0
 
     /*
@@ -66,8 +65,8 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 42;
     public static double MAX_ACCEL = 30;
-    public static double MAX_ANG_VEL = 4;
-    public static double MAX_ANG_ACCEL = Math.toRadians(60);
+    public static double MAX_ANG_VEL = 3;
+    public static double MAX_ANG_ACCEL = 1;
 
 
     public static double encoderTicksToInches(double ticks) {
