@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.SwitchableCamera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -18,6 +22,8 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
+
+import java.lang.reflect.Field;
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous
 public class Autonomous extends LinearOpMode{
@@ -41,7 +47,8 @@ public class Autonomous extends LinearOpMode{
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraViewId);
         camera.setPipeline(pipeline);
         drive.setPoseEstimate(FieldConstants.redCarouselStart);
-
+        drive.HEADING_PID = new PIDCoefficients(4, 0, 0);
+        drive.TRANSLATIONAL_PID = new PIDCoefficients(4, 0, 0);
         Trajectory toCarousel = drive.trajectoryBuilder(FieldConstants.redCarouselStart)
                 .lineToLinearHeading(FieldConstants.redCarousel)
                 .build();
@@ -108,11 +115,27 @@ public class Autonomous extends LinearOpMode{
         telemetry.addData("HAverage 2: ", pipeline.averageH2);
         telemetry.update();
 
-
-        Trajectory toHub = drive.trajectoryBuilder(toCarousel.end())
-                .lineToLinearHeading(new Pose2d(FieldConstants.redShippingHub.getX() - 13, FieldConstants.redShippingHub.getY()
-                , Math.toRadians(225)))
+        Trajectory transition = drive.trajectoryBuilder(toCarousel.end())
+                .lineToLinearHeading(new Pose2d(FieldConstants.transitionPoint.getX(), FieldConstants.redShippingHub.getY(), Math.toRadians(180)))
                 .build();
+        Trajectory toHub = drive.trajectoryBuilder(transition.end())
+                .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 21, FieldConstants.redShippingHub.getY() + 6))
+                .build();
+        switch (elementPosition) {
+            case CENTER:
+                break;
+            case LEFT:
+                toHub = drive.trajectoryBuilder(transition.end())
+                        .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 24, FieldConstants.redShippingHub.getY() + 6))
+                        .build();
+                break;
+            case RIGHT:
+                toHub = drive.trajectoryBuilder(transition.end())
+                        .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 20, FieldConstants.redShippingHub.getY() + 6))
+                        .build();
+                break;
+        }
+
 
 
         camera.closeCameraDevice();
@@ -123,7 +146,8 @@ public class Autonomous extends LinearOpMode{
         sleep(2000);
         actuation.stopCarousel();
         sleep(200);
-
+        drive.followTrajectory(transition);
+        sleep(200);
         drive.followTrajectory(toHub);
         actuation.slideAction(slidePosition);
         sleep(500);
@@ -132,11 +156,21 @@ public class Autonomous extends LinearOpMode{
         actuation.depositorClose();
         sleep(200);
 
-        Trajectory toPark = drive.trajectoryBuilder(toHub.end())
-                .lineToSplineHeading(new Pose2d(FieldConstants.redDepot.getX(), FieldConstants.redDepot.getY(), Math.toRadians(0)))
+        Trajectory toDepot = drive.trajectoryBuilder(toHub.end())
+                .lineToSplineHeading(new Pose2d(FieldConstants.transitionPoint2.getX(), FieldConstants.transitionPoint2.getY(), Math.toRadians(0)))
+                .build();
+
+        Trajectory transition2 = drive.trajectoryBuilder(toDepot.end())
+                .strafeTo(FieldConstants.transitionPoint3)
+                .build();
+
+        Trajectory toPark = drive.trajectoryBuilder(transition2.end())
+                .lineToConstantHeading(FieldConstants.redWarehouse)
                 .build();
 
         actuation.slideReset();
+        drive.followTrajectory(toDepot);
+        drive.followTrajectory(transition2);
         drive.followTrajectory(toPark);
     }
 

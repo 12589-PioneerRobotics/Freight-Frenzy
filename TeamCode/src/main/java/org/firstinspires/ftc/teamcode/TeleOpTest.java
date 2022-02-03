@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -23,17 +25,23 @@ public class TeleOpTest extends OpMode {
     DcMotorEx slide;
     int targetSlidePosition;
     int resetPosition;
+    double thresh;
 
     boolean depositorOpen;
+    boolean slowMode;
 
     @Override
     public void init() {
         depositorOpen = false;
         targetSlidePosition = 1;
         resetPosition = -20; // Lower numbers mean less slack on the slides string (very unintuitive i know, but it works)
+        thresh = 0.01;
         gamepadEvent1 = new GamepadEventPS(gamepad1);
         gamepadEvent2 = new GamepadEventPS(gamepad2);
         drive = new SampleMecanumDrive(hardwareMap);
+        drive.HEADING_PID = new PIDCoefficients(0, 0, 0);
+        drive.TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
+        slowMode = false;
         slide = hardwareMap.get(DcMotorEx.class, "slide");
         slide.setTargetPosition(targetSlidePosition);
         slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -46,14 +54,34 @@ public class TeleOpTest extends OpMode {
 
     @Override
     public void loop() {
-       drive.setWeightedDrivePower(
-               new Pose2d(
-                       -gamepad1.right_stick_y,
-                       -gamepad1.right_stick_x,
-                       -gamepad1.left_stick_x)
-       );
+        //if(Math.abs(gamepad1.left_stick_x) > thresh || Math.abs(gamepad1.left_stick_y) > thresh) {
+            //if(!slowMode) {
+                drive.setWeightedDrivePower(
+                        new Pose2d(
+                                -gamepad1.right_stick_y,
+                                -gamepad1.left_stick_x,
+                                -gamepad1.right_stick_x)
+                );
+//            }
+//            else {
+//                drive.setWeightedDrivePower(
+//                        new Pose2d(
+//                                -gamepad1.right_stick_y / 2,
+//                                -gamepad1.right_stick_x / 2,
+//                                -gamepad1.left_stick_x)
+//                );
+//            }
+        //}
+
 
        drive.update();
+
+        telemetry.addData("X: ", gamepad1.right_stick_x);
+        telemetry.addData("Y: ", gamepad1.right_stick_y);
+
+        if(gamepadEvent1.rightStickButton()) {
+            slowMode = !slowMode;
+        }
 
        if(gamepad1.right_trigger > 0.5){
            actuation.blockerOpen();
@@ -68,7 +96,7 @@ public class TeleOpTest extends OpMode {
            actuation.stopIntake();
        }
 
-       if(gamepad1.right_bumper)
+       if(gamepad2.right_bumper)
            actuation.depositorOpen();
        else
            actuation.depositorClose();
@@ -76,19 +104,19 @@ public class TeleOpTest extends OpMode {
 
         //
         setSlidePosition();
-        if(gamepadEvent1.triangle()) {
+        if(gamepadEvent2.triangle()) {
             actuation.setDepositorPosition(0.75);
             actuation.slideAction(3);
         }
-        else if(gamepadEvent1.circle()) {
+        else if(gamepadEvent2.circle()) {
             actuation.setDepositorPosition(0.75);
             actuation.slideAction(2);
         }
-        else if(gamepadEvent1.cross()){
+        else if(gamepadEvent2.cross()){
             actuation.setDepositorPosition(0.75);
             actuation.slideAction(1);
         }
-        else if(gamepadEvent1.square())
+        else if(gamepadEvent2.square())
             actuation.slideReset();
 
 
@@ -101,15 +129,19 @@ public class TeleOpTest extends OpMode {
 
        telemetry.addData("Target Slide Position", targetSlidePosition);
        telemetry.addData("Current Position: ", slide.getCurrentPosition());
+       telemetry.addData("Front Left: ", drive.leftFront.getCurrentPosition());
+       telemetry.addData("Front Right:", drive.rightFront.getCurrentPosition());
+       telemetry.addData("Rear Left: ", drive.leftRear.getCurrentPosition());
+       telemetry.addData("Rear Right: ", drive.rightRear.getCurrentPosition());
        telemetry.update();
     }
 
    private void setSlidePosition(){
-        if(gamepadEvent1.dPadUp()){
+        if(gamepadEvent2.dPadUp()){
             if(targetSlidePosition < 3)
                 targetSlidePosition ++;
         }
-        else if(gamepadEvent1.dPadDown()){
+        else if(gamepadEvent2.dPadDown()){
             if(targetSlidePosition > 1)
                 targetSlidePosition --;
         }
