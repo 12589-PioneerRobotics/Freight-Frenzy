@@ -39,8 +39,6 @@ public class TeleOpTest extends OpMode {
         gamepadEvent1 = new GamepadEventPS(gamepad1);
         gamepadEvent2 = new GamepadEventPS(gamepad2);
         drive = new SampleMecanumDrive(hardwareMap);
-        drive.HEADING_PID = new PIDCoefficients(0, 0, 0);
-        drive.TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
         slowMode = false;
         slide = hardwareMap.get(DcMotorEx.class, "slide");
         slide.setTargetPosition(targetSlidePosition);
@@ -54,24 +52,22 @@ public class TeleOpTest extends OpMode {
 
     @Override
     public void loop() {
-        //if(Math.abs(gamepad1.left_stick_x) > thresh || Math.abs(gamepad1.left_stick_y) > thresh) {
-            //if(!slowMode) {
+            if(!slowMode) {
                 drive.setWeightedDrivePower(
                         new Pose2d(
                                 -gamepad1.right_stick_y,
                                 -gamepad1.left_stick_x,
                                 -gamepad1.right_stick_x)
                 );
-//            }
-//            else {
-//                drive.setWeightedDrivePower(
-//                        new Pose2d(
-//                                -gamepad1.right_stick_y / 2,
-//                                -gamepad1.right_stick_x / 2,
-//                                -gamepad1.left_stick_x)
-//                );
-//            }
-        //}
+            }
+            else {
+                drive.setWeightedDrivePower(
+                        new Pose2d(
+                                -gamepad1.right_stick_y / 2,
+                                -gamepad1.right_stick_x / 2,
+                                -gamepad1.left_stick_x)
+                );
+            }
 
 
        drive.update();
