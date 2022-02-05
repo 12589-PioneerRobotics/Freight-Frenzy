@@ -39,25 +39,23 @@ public class Autonomous extends LinearOpMode{
 
     @Override
     public void runOpMode() throws InterruptedException {
-        drive = new SampleMecanumDrive(hardwareMap);
-        actuation = new Actuation(drive, this, null, hardwareMap);
-        cameraViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        pipeline = new Pipeline();
-        webcamName = hardwareMap.get(WebcamName.class, "webcam1");
-        camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraViewId);
-        camera.setPipeline(pipeline);
-        drive.setPoseEstimate(FieldConstants.redCarouselStart);
-        drive.HEADING_PID = new PIDCoefficients(4, 0, 0);
-        drive.TRANSLATIONAL_PID = new PIDCoefficients(4, 0, 0);
-        Trajectory toCarousel = drive.trajectoryBuilder(FieldConstants.redCarouselStart)
+        drive = new SampleMecanumDrive(hardwareMap); // Initializes roadrunner
+        actuation = new Actuation(drive, this, null, hardwareMap); // Initializes the actuation class
+        cameraViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()); // sets the ID for the camera
+        pipeline = new Pipeline(); // Initializes the pipeline for the camera
+        webcamName = hardwareMap.get(WebcamName.class, "webcam1"); // Gets the webcam from the hardware map
+        camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraViewId); // Initializes the camera
+        camera.setPipeline(pipeline); // Sets the cameras pipeline
+        drive.setPoseEstimate(FieldConstants.redCarouselStart); // Sets the starting position for the robot
+        Trajectory toCarousel = drive.trajectoryBuilder(FieldConstants.redCarouselStart) // Build the trajectory to move from the starting position to the carousel
                 .lineToLinearHeading(FieldConstants.redCarousel)
                 .build();
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened() {
+            public void onOpened() { // When the camera is opened
                 //testCam.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
-                camera.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT); // Start streaming the camera for use
             }
 
             @Override
@@ -82,17 +80,17 @@ public class Autonomous extends LinearOpMode{
 
 
  */
-        telemetry.addData("Element Position: ", pipeline.getDetectionResults());
-        telemetry.addLine("Waiting for start");
-        telemetry.update();
+        telemetry.addData("Element Position: ", pipeline.getDetectionResults()); // Prints where the capstone is located (from CV)
+        telemetry.addLine("Waiting for start"); // waiting for start 
+        telemetry.update(); // Update the telemetry
 
-        waitForStart();
+        waitForStart(); // Wait for the start 
 
         sleep(100);
 
-        elementPosition = pipeline.getDetectionResults();
+        elementPosition = pipeline.getDetectionResults(); // Gets the detection results from the camera
 
-        switch(elementPosition){
+        switch(elementPosition){ // Sets the slide postions based on the position of the capstone (from CV)
             case LEFT:
                 slidePosition = 1;
                 break;
@@ -108,20 +106,20 @@ public class Autonomous extends LinearOpMode{
         }
 
 
-        telemetry.addData("Element Position: ", elementPosition);
-        telemetry.addData("SAverage 1: ", pipeline.averageS1);
-        telemetry.addData("SAverage 2: ", pipeline.averageS2);
-        telemetry.addData("HAverage 1: ", pipeline.averageH1);
-        telemetry.addData("HAverage 2: ", pipeline.averageH2);
-        telemetry.update();
+        telemetry.addData("Element Position: ", elementPosition); // Prints the element position
+        telemetry.addData("SAverage 1: ", pipeline.averageS1); // Prints the saturation average for the first box
+        telemetry.addData("SAverage 2: ", pipeline.averageS2); // Prints the saturation average for the second box
+        telemetry.addData("HAverage 1: ", pipeline.averageH1); // Prints the hue average for the first box
+        telemetry.addData("HAverage 2: ", pipeline.averageH2); // Prints the hue average for the second box
+        telemetry.update(); // Updates the telemetry
 
-        Trajectory transition = drive.trajectoryBuilder(toCarousel.end())
+        Trajectory transition = drive.trajectoryBuilder(toCarousel.end()) // Builds the default case for the transition point trajectory
                 .lineToLinearHeading(new Pose2d(FieldConstants.transitionPoint.getX(), FieldConstants.redShippingHub.getY(), Math.toRadians(180)))
                 .build();
-        Trajectory toHub = drive.trajectoryBuilder(transition.end())
+        Trajectory toHub = drive.trajectoryBuilder(transition.end()) // Builds the trajectory from the transition point to the shipping hub
                 .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 21, FieldConstants.redShippingHub.getY() + 6))
                 .build();
-        switch (elementPosition) {
+        switch (elementPosition) { // change transition point based on the position of the capstone (from cv) (so it doesnt displace it)
             case CENTER:
                 break;
             case LEFT:
@@ -138,40 +136,40 @@ public class Autonomous extends LinearOpMode{
 
 
 
-        camera.closeCameraDevice();
+        camera.closeCameraDevice(); // Close Camera
 
-        drive.followTrajectory(toCarousel);
+        drive.followTrajectory(toCarousel); // move to carousel
 
-        actuation.carouselSpinRed();
+        actuation.carouselSpinRed(); // Spin the carousel spinner for the red side
         sleep(2000);
-        actuation.stopCarousel();
+        actuation.stopCarousel(); // Stop the carousel 
         sleep(200);
-        drive.followTrajectory(transition);
+        drive.followTrajectory(transition); // Follow the trajectory to a transition point that allows the robot to avoid the capstone
         sleep(200);
-        drive.followTrajectory(toHub);
-        actuation.slideAction(slidePosition);
+        drive.followTrajectory(toHub); // Drive from the transition point to the shipping hub
+        actuation.slideAction(slidePosition); // Move the slide to the position corresponding to the capstone 
         sleep(500);
-        actuation.depositorOpen();
+        actuation.depositorOpen(); // Open the depositor
         sleep(1500);
-        actuation.depositorClose();
+        actuation.depositorClose(); // Close the depositor
         sleep(200);
 
-        Trajectory toDepot = drive.trajectoryBuilder(toHub.end())
+        Trajectory toDepot = drive.trajectoryBuilder(toHub.end()) // Build the trajectory to the depot from the shipping hub position
                 .lineToSplineHeading(new Pose2d(FieldConstants.transitionPoint2.getX(), FieldConstants.transitionPoint2.getY(), Math.toRadians(0)))
                 .build();
 
-        Trajectory transition2 = drive.trajectoryBuilder(toDepot.end())
+        Trajectory transition2 = drive.trajectoryBuilder(toDepot.end()) // A transition point from the depot to the warehouse to avoid hitting the capstone
                 .strafeTo(FieldConstants.transitionPoint3)
                 .build();
 
-        Trajectory toPark = drive.trajectoryBuilder(transition2.end())
+        Trajectory toPark = drive.trajectoryBuilder(transition2.end()) // Build the trajectory from the transition point to the parking spot
                 .lineToConstantHeading(FieldConstants.redWarehouse)
                 .build();
 
-        actuation.slideReset();
-        drive.followTrajectory(toDepot);
-        drive.followTrajectory(transition2);
-        drive.followTrajectory(toPark);
+        actuation.slideReset(); // Reset the slide position
+        drive.followTrajectory(toDepot); // Follow the trajectory to the depot
+        drive.followTrajectory(transition2); // Move to the transition point
+        drive.followTrajectory(toPark); // Move to the parking spot and park
     }
 
 
@@ -209,16 +207,18 @@ class Pipeline extends OpenCvPipeline {
 
         Imgproc.cvtColor(input, hls, Imgproc.COLOR_RGB2HLS);
 
+        // Averages the hue and saturation
         averageH1 = Core.mean(region1).val[0];
         averageH2 = Core.mean(region2).val[0];
         averageS1 = Core.mean(region1).val[2];
         averageS2 = Core.mean(region2).val[2];
 
 
-
+        // Draws rectanglular regions to be scanned for the capstone
         Imgproc.rectangle(input, topAnchor1, bottomAnchor1, BLUE, 1);
         Imgproc.rectangle(input, topAnchor2, bottomAnchor2, BLUE, 1);
 
+        // takes average hue, and/or saturation to detect where the capstone is located 
         if(averageS1 > 70 && averageS2 > 70){
             if(averageH1 > 60 && averageH1 < 75)
                 position = FieldConstants.ShippingElementPosition.LEFT;
