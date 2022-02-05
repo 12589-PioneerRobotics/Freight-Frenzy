@@ -52,7 +52,7 @@ public class TeleOpTest extends OpMode {
 
     @Override
     public void loop() {
-            if(!slowMode) {
+            if(!slowMode) { // If the slowmode is toggled on, the robot will move twice as slow
                 drive.setWeightedDrivePower(
                         new Pose2d(
                                 -gamepad1.right_stick_y,
@@ -70,79 +70,66 @@ public class TeleOpTest extends OpMode {
             }
 
 
-       drive.update();
+       drive.update(); // Update SampleMecanumDrive
 
+        // Print the input from the left stick
         telemetry.addData("X: ", gamepad1.right_stick_x);
         telemetry.addData("Y: ", gamepad1.right_stick_y);
 
-        if(gamepadEvent1.rightStickButton()) {
+        if(gamepadEvent1.rightStickButton()) { // If the right stick button is clicked down, toggle the slowmode
             slowMode = !slowMode;
         }
 
-       if(gamepad1.right_trigger > 0.5){
+       if(gamepad1.right_trigger > 0.5){ // Run the intake when the right trigger is pressed down
            actuation.blockerOpen();
            actuation.intake();
        }
-       else if(gamepad1.left_trigger > 0.5) {
+       else if(gamepad1.left_trigger > 0.5) { // Run the intake backwards when the left trigger is pressed down
            actuation.blockerClose();
            actuation.spitOut();
        }
-       else {
+       else { // If no triggers are pressed, stop the intake
            actuation.blockerClose();
            actuation.stopIntake();
        }
 
-       if(gamepad2.right_bumper)
+       if(gamepad2.right_bumper) // Open the depositor if the right bumper is pressed down
            actuation.depositorOpen();
-       else
+       else // Close the depositor if the right bumper isn't pressed down
            actuation.depositorClose();
 
 
-        //
-        setSlidePosition();
-        if(gamepadEvent2.triangle()) {
+        if(gamepadEvent2.triangle()) { // Set the slides to the third position (highest)
             actuation.setDepositorPosition(0.75);
             actuation.slideAction(3);
         }
-        else if(gamepadEvent2.circle()) {
+        else if(gamepadEvent2.circle()) { // Set the slides to the second position (middle)
             actuation.setDepositorPosition(0.75);
             actuation.slideAction(2);
         }
-        else if(gamepadEvent2.cross()){
+        else if(gamepadEvent2.cross()){ // Set the slides to the first position (bottom)
             actuation.setDepositorPosition(0.75);
             actuation.slideAction(1);
         }
-        else if(gamepadEvent2.square())
+        else if(gamepadEvent2.square()) // Reset the slides to the position for intake
             actuation.slideReset();
 
 
-       if(gamepad2.right_trigger > 0.5)
+       if(gamepad2.right_trigger > 0.5) // Spin the carousel spinner right if the right trigger is pressed down
            actuation.carouselSpinRed();
-        else if(gamepad2.left_trigger > 0.5)
+        else if(gamepad2.left_trigger > 0.5) // Spins the carousel spinner left if the left trigger is pressed down
             actuation.carouselSpinBlue();
         else
-            actuation.stopCarousel();
+            actuation.stopCarousel(); // Stop the carousel spinner if none of the buttons are pressed down
 
-       telemetry.addData("Target Slide Position", targetSlidePosition);
-       telemetry.addData("Current Position: ", slide.getCurrentPosition());
+       telemetry.addData("Target Slide Position", targetSlidePosition); // Print the current target slide position
+       telemetry.addData("Current Position: ", slide.getCurrentPosition()); // Print the actual current slide position
+
+        // Print the current locations of all the wheels
        telemetry.addData("Front Left: ", drive.leftFront.getCurrentPosition());
        telemetry.addData("Front Right:", drive.rightFront.getCurrentPosition());
        telemetry.addData("Rear Left: ", drive.leftRear.getCurrentPosition());
        telemetry.addData("Rear Right: ", drive.rightRear.getCurrentPosition());
        telemetry.update();
     }
-
-   private void setSlidePosition(){
-        if(gamepadEvent2.dPadUp()){
-            if(targetSlidePosition < 3)
-                targetSlidePosition ++;
-        }
-        else if(gamepadEvent2.dPadDown()){
-            if(targetSlidePosition > 1)
-                targetSlidePosition --;
-        }
-    }
-
-
-
 }

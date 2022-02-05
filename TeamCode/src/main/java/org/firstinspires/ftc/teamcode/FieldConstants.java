@@ -16,6 +16,7 @@ public class FieldConstants {
         RIGHT
     }
 
+    // Sets the maximum borders for the field
     public static int maximumX = 72;
     public static int maximumY = 72;
     public static int minimumX = -72;
