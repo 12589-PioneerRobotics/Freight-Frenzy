@@ -15,7 +15,8 @@ public class Actuation {
     SampleMecanumDrive drive;
     HardwareMap hardwareMap;
     public DcMotorEx slide, intake, carousel;
-    public Servo depositor, blocker;
+    public Servo depositor, blocker, grabberArm;
+    public CRServo grabberClaw;
     LinearOpMode linearOpMode;
     OpMode opMode;
     HashMap<Integer, Integer> slidePositionMap;
@@ -72,6 +73,14 @@ public class Actuation {
         if(hardwareMap.servo.contains("blocker")){
             blocker = hardwareMap.get(Servo.class, "blocker");
             blocker.setPosition(blockerOpen);
+        }
+
+        if(hardwareMap.servo.contains("grabberArm")) {
+            grabberArm = hardwareMap.get(Servo.class, "grabberArm");
+        }
+
+        if(hardwareMap.servo.contains("grabberClaw")) {
+            grabberClaw = hardwareMap.get(CRServo.class, "grabberClaw");
         }
     }
 
@@ -166,7 +175,4 @@ public class Actuation {
             return;
         carousel.setPower(0);
     }
-
-
-
 }
