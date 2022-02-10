@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.drive.Actuation;
 import org.firstinspires.ftc.teamcode.drive.GamepadEventPS;
@@ -16,6 +17,7 @@ public class grabberTest extends OpMode {
     Actuation actuation;
     GamepadEventPS gamepadEvent1, gamepadEvent2;
     boolean slowMode;
+    double armPos = 0.0;
 
     @Override
     public void init() {
@@ -29,6 +31,12 @@ public class grabberTest extends OpMode {
 
     @Override
     public void loop() {
+
+        if(gamepadEvent1.dPadUp())
+            armPos += 0.1;
+        if(gamepadEvent1.dPadDown())
+            armPos -= 0.1;
+
         if(!slowMode) { // If the slowmode is toggled on, the robot will move twice as slow
             drive.setWeightedDrivePower(
                     new Pose2d(
@@ -47,6 +55,7 @@ public class grabberTest extends OpMode {
         }
         drive.update(); // Update SampleMecanumDrive
 
+/*
         if(gamepad1.left_bumper)
             actuation.grabberClaw.setPower(0.75);
         else
@@ -58,8 +67,12 @@ public class grabberTest extends OpMode {
             actuation.grabberArm.setPosition(0.75);
 
         if(gamepad1.square)
-            actuation.grabberArm.setPosition(1.00);
+            actuation.setArmPosition(1.00);
+*/
+        if(gamepadEvent1.rightBumper())
+            actuation.setArmPosition(armPos);
 
+        telemetry.addData("Grabber Arm Target Position", armPos);
         telemetry.addData("Grabber Arm Position", actuation.grabberArm.getPosition());
         telemetry.update();
     }

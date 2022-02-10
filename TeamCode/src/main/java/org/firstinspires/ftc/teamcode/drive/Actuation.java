@@ -77,10 +77,11 @@ public class Actuation {
 
         if(hardwareMap.servo.contains("grabberArm")) {
             grabberArm = hardwareMap.get(Servo.class, "grabberArm");
+            grabberArm.setPosition(0.0);
         }
 
         if(hardwareMap.servo.contains("grabberClaw")) {
-            grabberClaw = hardwareMap.get(CRServo.class, "grabberClaw");
+            grabberClaw = hardwareMap.crservo.get("grabberClaw");
         }
     }
 
@@ -174,5 +175,9 @@ public class Actuation {
         if(carousel == null)
             return;
         carousel.setPower(0);
+    }
+
+    public void setArmPosition(double pos){
+        grabberArm.setPosition(pos);
     }
 }

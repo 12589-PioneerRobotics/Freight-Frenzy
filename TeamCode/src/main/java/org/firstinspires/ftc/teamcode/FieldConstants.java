@@ -26,24 +26,24 @@ public class FieldConstants {
 
     public static Pose2d redCarouselStart = new Pose2d(-36.75, -58, Math.toRadians(90));
     public static Pose2d redWarehouseStart = new Pose2d(-68, -20, Math.toRadians(0));
-    public static Pose2d blueCarouselStart = new Pose2d(-36.75, 58, Math.toRadians(180));
+    public static Pose2d blueCarouselStart = new Pose2d(-36.75, 58, Math.toRadians(-90));
     public static Pose2d blueWarehouseStart = new Pose2d(68, -20, Math.toRadians(180));
 
     public static Pose2d redCarousel = new Pose2d(-61, -55, Math.toRadians(40));
-    public static Pose2d blueCarousel = new Pose2d(-61, 55, Math.toRadians(40));
+    public static Pose2d blueCarousel = new Pose2d(-59, 55, Math.toRadians(-90));
 
     public static Vector2d redDepot = new Vector2d(-64, -33);
     public static Vector2d blueDepot = new Vector2d(-64, 33);
 
     public static Vector2d redWarehouse = new Vector2d(48, -40);
-    public static Vector2d blueWarehouse = new Vector2d(48, 40);
+    public static Vector2d blueWarehouse = new Vector2d(48, 56);
 
     public static Pose2d transitionPoint = new Pose2d(-60, -17);
-    public static Pose2d transitionPointBlue = new Pose2d(-60, 17);
+    public static Pose2d transitionPointBlue = new Pose2d(-58, 17);
     public static Vector2d redShippingHub = new Vector2d(-11.5, -23);
-    public static Vector2d blueShippingHub = new Vector2d(-11.5, 23);
-    public static Vector2d transitionPoint2 = new Vector2d(-62, -17);
-    public static Vector2d transitionPointBlue2 = new Vector2d(-62, 17);
+    public static Vector2d blueShippingHub = new Vector2d(-11.5, 20);
+    public static Vector2d transitionPoint2 = new Vector2d(-60, -17);
+    public static Vector2d transitionPointBlue2 = new Vector2d(-58, 17);
     public static Vector2d transitionPoint3 = new Vector2d(-60, -49);
-    public static Vector2d transitionPointBlue3 = new Vector2d(-60, 49);
+    public static Vector2d transitionPointBlue3 = new Vector2d(-58, 49);
 }
