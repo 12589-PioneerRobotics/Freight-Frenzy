@@ -15,8 +15,7 @@ public class Actuation {
     SampleMecanumDrive drive;
     HardwareMap hardwareMap;
     public DcMotorEx slide, intake, carousel;
-    public Servo depositor, blocker, grabberArm;
-    public CRServo grabberClaw;
+    public Servo depositor, blocker, grabberArm, grabberClaw;
     LinearOpMode linearOpMode;
     OpMode opMode;
     HashMap<Integer, Integer> slidePositionMap;
@@ -33,6 +32,11 @@ public class Actuation {
     final double slidePower = 0.70;
     final double carouselPower = 0.80;
     final double intakePower = 0.7;
+    final double clawClosed = 0.0;
+    final double clawOpen = 0.9;
+    final double armDown = 0.0;
+    final double armUp = 0.4;
+    public boolean clawIdle = true;
 
     public Actuation(SampleMecanumDrive drive, LinearOpMode linearOpMode, OpMode opMode, HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
@@ -81,7 +85,8 @@ public class Actuation {
         }
 
         if(hardwareMap.servo.contains("grabberClaw")) {
-            grabberClaw = hardwareMap.crservo.get("grabberClaw");
+            grabberClaw = hardwareMap.servo.get("grabberClaw");
+            grabberClaw.setPosition(clawClosed);
         }
     }
 
@@ -168,7 +173,7 @@ public class Actuation {
     public void carouselSpinBlue(){
         if(carousel == null)
             return;
-        carousel.setPower(-1);
+        carousel.setPower(-0.7);
     }
 
     public void stopCarousel(){
@@ -180,4 +185,16 @@ public class Actuation {
     public void setArmPosition(double pos){
         grabberArm.setPosition(pos);
     }
+
+    public void clawAction(){
+        if(grabberClaw.getPosition() < clawOpen) {
+            clawIdle = false;
+            grabberClaw.setPosition(clawOpen);
+        }
+        else {
+            grabberClaw.setPosition(clawClosed);
+            clawIdle = true;
+        }
+    }
+
 }

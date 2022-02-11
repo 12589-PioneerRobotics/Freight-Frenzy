@@ -28,7 +28,8 @@ public class ServoTest extends OpMode{
         blocker = hardwareMap.get(Servo.class, "blocker");
         depositor.setPosition(0);
         blocker.setPosition(0);
-
+        telemetry.addLine(depositor.getConnectionInfo());
+        telemetry.addLine(blocker.getConnectionInfo());
         telemetry.addLine("Initialized!");
     }
 

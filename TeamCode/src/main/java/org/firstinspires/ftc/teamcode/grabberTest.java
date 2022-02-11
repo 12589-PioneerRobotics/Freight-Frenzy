@@ -17,7 +17,11 @@ public class grabberTest extends OpMode {
     Actuation actuation;
     GamepadEventPS gamepadEvent1, gamepadEvent2;
     boolean slowMode;
-    double armPos = 0.0;
+    double armPos, clawPos = 0.0;
+    /*
+    double clawPos = 0.2;
+    double armPos, loweredClawPos = 0.0;
+    */
 
     @Override
     public void init() {
@@ -26,16 +30,21 @@ public class grabberTest extends OpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         actuation = new Actuation(drive, null, this, hardwareMap);
         slowMode = false;
+        actuation.setArmPosition(0.39);
         telemetry.addLine("Initialized!");
     }
 
     @Override
     public void loop() {
-
         if(gamepadEvent1.dPadUp())
-            armPos += 0.1;
+            armPos += 0.05;
         if(gamepadEvent1.dPadDown())
-            armPos -= 0.1;
+            armPos -= 0.05;
+
+        if(gamepadEvent1.dPadLeft())
+            clawPos -= 0.1;
+        if(gamepadEvent1.dPadRight())
+            clawPos += 0.1;
 
         if(!slowMode) { // If the slowmode is toggled on, the robot will move twice as slow
             drive.setWeightedDrivePower(
@@ -55,25 +64,35 @@ public class grabberTest extends OpMode {
         }
         drive.update(); // Update SampleMecanumDrive
 
-/*
-        if(gamepad1.left_bumper)
-            actuation.grabberClaw.setPower(0.75);
-        else
-            actuation.grabberClaw.setPower(0.0);
 
         if(gamepadEvent1.cross())
             actuation.grabberArm.setPosition(0.5);
         if(gamepadEvent1.circle())
             actuation.grabberArm.setPosition(0.75);
-
+/*
         if(gamepad1.square)
             actuation.setArmPosition(1.00);
 */
+
+        if(gamepadEvent1.leftBumper())
+            actuation.grabberClaw.setPosition(clawPos);
+
         if(gamepadEvent1.rightBumper())
+            actuation.clawAction();
+
+        if(gamepadEvent1.leftBumper())
             actuation.setArmPosition(armPos);
+        /*
+        if (armPos >= 0.75 && actuation.clawIdle) {
+            actuation.grabberClaw.setPosition(loweredClawPos);
+        }
+        */
+
 
         telemetry.addData("Grabber Arm Target Position", armPos);
         telemetry.addData("Grabber Arm Position", actuation.grabberArm.getPosition());
+        telemetry.addData("Claw Position: ", actuation.grabberClaw.getPosition());
+        telemetry.addData("Claw Target Position: ", clawPos);
         telemetry.update();
     }
 }

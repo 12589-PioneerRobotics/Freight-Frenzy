@@ -35,8 +35,8 @@ public class FieldConstants {
     public static Vector2d redDepot = new Vector2d(-64, -33);
     public static Vector2d blueDepot = new Vector2d(-64, 33);
 
-    public static Vector2d redWarehouse = new Vector2d(48, -40);
-    public static Vector2d blueWarehouse = new Vector2d(48, 56);
+    public static Vector2d redWarehouse = new Vector2d(52, -40);
+    public static Vector2d blueWarehouse = new Vector2d(52, 64);
 
     public static Pose2d transitionPoint = new Pose2d(-60, -17);
     public static Pose2d transitionPointBlue = new Pose2d(-58, 17);
