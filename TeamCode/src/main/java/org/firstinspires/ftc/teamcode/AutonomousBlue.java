@@ -113,7 +113,7 @@ public class AutonomousBlue extends LinearOpMode{
                 .lineToLinearHeading(new Pose2d(FieldConstants.transitionPointBlue.getX(), FieldConstants.transitionPointBlue.getY(), Math.toRadians(180)))
                 .build();
         Trajectory toHub = drive.trajectoryBuilder(transition.end()) // Builds the trajectory from the transition point to the shipping hub
-                .lineToConstantHeading(new Vector2d(FieldConstants.blueShippingHub.getX() - 21, FieldConstants.blueShippingHub.getY()))
+                .lineToConstantHeading(new Vector2d(FieldConstants.blueShippingHub.getX() - 18.5, FieldConstants.blueShippingHub.getY() + 1))
                 .build();
         switch (elementPosition) { // change transition point based on the position of the capstone (from cv) (so it doesnt displace it)
             case CENTER:
@@ -148,8 +148,9 @@ public class AutonomousBlue extends LinearOpMode{
                 .strafeTo(FieldConstants.transitionPointBlue3)
                 .build();
 
-        Trajectory toPark = drive.trajectoryBuilder(transition2.end()) // Build the trajectory from the transition point to the parking spot
-                .lineToConstantHeading(FieldConstants.blueWarehouse)
+        Trajectory toPark = drive.trajectoryBuilder(transition2.end())
+                .splineToConstantHeading(FieldConstants.evasiveBlue, Math.toRadians(0))// Build the trajectory from the transition point to the parking spot
+                .splineToConstantHeading(FieldConstants.blueWarehouse, Math.toRadians(0))
                 .build();
 
         actuation.slideReset(); // Reset the slide position

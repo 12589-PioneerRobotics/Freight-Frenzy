@@ -24,8 +24,8 @@ public class Actuation {
     final int slideMidPos = 400;
     final int slideBottomPos = 200;
     final int slideInitPos = 0;
-    public final double depositorClose = 0.82;
-    public final double depositorOpen = 0.40;
+    public final double depositorClose = 0.76;
+    public final double depositorOpen = 0.35;
     final double blockerClose = 0.50;
     final double blockerOpen = 0.05;
     final double intakeVelocity = 2000.0;
@@ -33,10 +33,7 @@ public class Actuation {
     final double carouselPower = 0.80;
     final double intakePower = 0.7;
     final double clawClosed = 0.0;
-    final double clawOpen = 0.9;
-    final double armDown = 0.0;
-    final double armUp = 0.4;
-    public boolean clawIdle = true;
+    final double clawOpen = 1.0;
 
     public Actuation(SampleMecanumDrive drive, LinearOpMode linearOpMode, OpMode opMode, HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
@@ -81,7 +78,7 @@ public class Actuation {
 
         if(hardwareMap.servo.contains("grabberArm")) {
             grabberArm = hardwareMap.get(Servo.class, "grabberArm");
-            grabberArm.setPosition(0.0);
+            grabberArm.setPosition(0.1);
         }
 
         if(hardwareMap.servo.contains("grabberClaw")) {
@@ -188,12 +185,10 @@ public class Actuation {
 
     public void clawAction(){
         if(grabberClaw.getPosition() < clawOpen) {
-            clawIdle = false;
             grabberClaw.setPosition(clawOpen);
         }
         else {
             grabberClaw.setPosition(clawClosed);
-            clawIdle = true;
         }
     }
 

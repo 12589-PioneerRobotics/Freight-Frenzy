@@ -129,7 +129,7 @@ public class Autonomous extends LinearOpMode{
                 .lineToLinearHeading(new Pose2d(FieldConstants.transitionPoint.getX(), FieldConstants.redShippingHub.getY(), Math.toRadians(180)))
                 .build();
         Trajectory toHub = drive.trajectoryBuilder(transition.end()) // Builds the trajectory from the transition point to the shipping hub
-                .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 21.5, FieldConstants.redShippingHub.getY() + 6))
+                .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 23, FieldConstants.redShippingHub.getY() + 6))
                 .build();
         switch (elementPosition) { // change transition point based on the position of the capstone (from cv) (so it doesnt displace it)
             case CENTER:

@@ -30,7 +30,6 @@ public class grabberTest extends OpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         actuation = new Actuation(drive, null, this, hardwareMap);
         slowMode = false;
-        actuation.setArmPosition(0.39);
         telemetry.addLine("Initialized!");
     }
 
@@ -66,16 +65,17 @@ public class grabberTest extends OpMode {
 
 
         if(gamepadEvent1.cross())
-            actuation.grabberArm.setPosition(0.5);
+            actuation.grabberArm.setPosition(0.4);
         if(gamepadEvent1.circle())
-            actuation.grabberArm.setPosition(0.75);
+            actuation.grabberArm.setPosition(0.85);
 /*
         if(gamepad1.square)
             actuation.setArmPosition(1.00);
 */
-
+        /*
         if(gamepadEvent1.leftBumper())
             actuation.grabberClaw.setPosition(clawPos);
+        */
 
         if(gamepadEvent1.rightBumper())
             actuation.clawAction();

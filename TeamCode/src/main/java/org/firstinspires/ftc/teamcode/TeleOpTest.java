@@ -1,17 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.Actuation;
 import org.firstinspires.ftc.teamcode.drive.GamepadEventPS;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -24,7 +18,9 @@ public class TeleOpTest extends OpMode {
     GamepadEventPS gamepadEvent1, gamepadEvent2;
     DcMotorEx slide;
     int targetSlidePosition;
-    int resetPosition;
+    int resetSlidePosition;
+
+    double topArmPosition, middleArmPosition, lowArmPosition;
     double thresh;
 
     boolean depositorOpen;
@@ -34,7 +30,12 @@ public class TeleOpTest extends OpMode {
     public void init() {
         depositorOpen = false;
         targetSlidePosition = 1;
-        resetPosition = -20; // Lower numbers mean less slack on the slides string (very unintuitive i know, but it works)
+        resetSlidePosition = -20; // Lower numbers mean less slack on the slides string (very unintuitive i know, but it works)
+
+        topArmPosition = 0.1;
+        middleArmPosition = 0.55;
+        lowArmPosition = 1.0;
+
         thresh = 0.01;
         gamepadEvent1 = new GamepadEventPS(gamepad1);
         gamepadEvent2 = new GamepadEventPS(gamepad2);
@@ -64,8 +65,8 @@ public class TeleOpTest extends OpMode {
                 drive.setWeightedDrivePower(
                         new Pose2d(
                                 -gamepad1.right_stick_y / 2,
-                                -gamepad1.right_stick_x / 2,
-                                -gamepad1.left_stick_x)
+                                -gamepad1.left_stick_x / 2,
+                                -gamepad1.right_stick_x / 2)
                 );
             }
 
@@ -122,9 +123,19 @@ public class TeleOpTest extends OpMode {
         else
             actuation.stopCarousel(); // Stop the carousel spinner if none of the buttons are pressed down
 
-       telemetry.addData("Target Slide Position", targetSlidePosition); // Print the current target slide position
-       telemetry.addData("Current Position: ", slide.getCurrentPosition()); // Print the actual current slide position
+        if(gamepadEvent2.dPadDown())
+            actuation.grabberArm.setPosition(lowArmPosition);
+        if(gamepadEvent2.dPadUp())
+            actuation.grabberArm.setPosition(middleArmPosition);
+        if(gamepadEvent2.dPadLeft())
+            actuation.grabberArm.setPosition(topArmPosition);
 
+        if(gamepadEvent2.dPadRight()) {
+            actuation.clawAction();
+        }
+
+       telemetry.addData("Current Slide Position: ", slide.getCurrentPosition()); // Print the actual current slide position
+        telemetry.addData("Current Grabber Arm Position", actuation.grabberArm.getPosition());
         // Print the current locations of all the wheels
        telemetry.addData("Front Left: ", drive.leftFront.getCurrentPosition());
        telemetry.addData("Front Right:", drive.rightFront.getCurrentPosition());

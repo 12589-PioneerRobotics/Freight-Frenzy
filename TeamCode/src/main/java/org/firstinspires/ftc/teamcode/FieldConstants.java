@@ -35,15 +35,16 @@ public class FieldConstants {
     public static Vector2d redDepot = new Vector2d(-64, -33);
     public static Vector2d blueDepot = new Vector2d(-64, 33);
 
-    public static Vector2d redWarehouse = new Vector2d(52, -40);
-    public static Vector2d blueWarehouse = new Vector2d(52, 64);
+    public static Vector2d redWarehouse = new Vector2d(52, -29);
+    public static Vector2d blueWarehouse = new Vector2d(48, 55);
 
     public static Pose2d transitionPoint = new Pose2d(-60, -17);
-    public static Pose2d transitionPointBlue = new Pose2d(-58, 17);
+    public static Pose2d transitionPointBlue = new Pose2d(-58, 20);
     public static Vector2d redShippingHub = new Vector2d(-11.5, -23);
     public static Vector2d blueShippingHub = new Vector2d(-11.5, 20);
-    public static Vector2d transitionPoint2 = new Vector2d(-60, -17);
+    public static Vector2d transitionPoint2 = new Vector2d(-60, -15);
     public static Vector2d transitionPointBlue2 = new Vector2d(-58, 17);
-    public static Vector2d transitionPoint3 = new Vector2d(-60, -49);
+    public static Vector2d transitionPoint3 = new Vector2d(-60, -46);
     public static Vector2d transitionPointBlue3 = new Vector2d(-58, 49);
+    public static Vector2d evasiveBlue = new Vector2d(34, 42);
 }
