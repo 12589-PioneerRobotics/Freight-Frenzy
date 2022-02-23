@@ -117,7 +117,7 @@ public class Autonomous extends LinearOpMode{
 
 
         camera.closeCameraDevice(); // Close Camera
-
+        sleep(5000);
         drive.followTrajectory(toCarousel); // move to carousel
 
         actuation.carouselSpinRed(); // Spin the carousel spinner for the red side
@@ -141,7 +141,7 @@ public class Autonomous extends LinearOpMode{
                 break;
             case RIGHT:
                 toHub = drive.trajectoryBuilder(transition.end())
-                        .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 20, FieldConstants.redShippingHub.getY() + 6))
+                        .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 21, FieldConstants.redShippingHub.getY() + 6))
                         .build();
                 break;
         }
@@ -165,7 +165,8 @@ public class Autonomous extends LinearOpMode{
                 .build();
 
         Trajectory toPark = drive.trajectoryBuilder(transition2.end()) // Build the trajectory from the transition point to the parking spot
-                .lineToConstantHeading(FieldConstants.redWarehouse)
+                .splineToConstantHeading(FieldConstants.evasiveRed, Math.toRadians(0))
+                .splineToConstantHeading(FieldConstants.redWarehouse, Math.toRadians(0))
                 .build();
 
         actuation.slideReset(); // Reset the slide position

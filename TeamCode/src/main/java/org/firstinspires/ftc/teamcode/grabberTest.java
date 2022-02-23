@@ -63,11 +63,6 @@ public class grabberTest extends OpMode {
         }
         drive.update(); // Update SampleMecanumDrive
 
-
-        if(gamepadEvent1.cross())
-            actuation.grabberArm.setPosition(0.4);
-        if(gamepadEvent1.circle())
-            actuation.grabberArm.setPosition(0.85);
 /*
         if(gamepad1.square)
             actuation.setArmPosition(1.00);
@@ -77,22 +72,11 @@ public class grabberTest extends OpMode {
             actuation.grabberClaw.setPosition(clawPos);
         */
 
-        if(gamepadEvent1.rightBumper())
-            actuation.clawAction();
-
-        if(gamepadEvent1.leftBumper())
-            actuation.setArmPosition(armPos);
         /*
         if (armPos >= 0.75 && actuation.clawIdle) {
             actuation.grabberClaw.setPosition(loweredClawPos);
         }
         */
 
-
-        telemetry.addData("Grabber Arm Target Position", armPos);
-        telemetry.addData("Grabber Arm Position", actuation.grabberArm.getPosition());
-        telemetry.addData("Claw Position: ", actuation.grabberClaw.getPosition());
-        telemetry.addData("Claw Target Position: ", clawPos);
-        telemetry.update();
     }
 }

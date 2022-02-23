@@ -101,7 +101,7 @@ public class AutonomousBlue extends LinearOpMode{
 
 
         camera.closeCameraDevice(); // Close Camera
-
+        sleep(5000);
         drive.followTrajectory(toCarousel); // move to carousel
 
         actuation.carouselSpinBlue(); // Spin the carousel spinner for the blue side
@@ -113,19 +113,19 @@ public class AutonomousBlue extends LinearOpMode{
                 .lineToLinearHeading(new Pose2d(FieldConstants.transitionPointBlue.getX(), FieldConstants.transitionPointBlue.getY(), Math.toRadians(180)))
                 .build();
         Trajectory toHub = drive.trajectoryBuilder(transition.end()) // Builds the trajectory from the transition point to the shipping hub
-                .lineToConstantHeading(new Vector2d(FieldConstants.blueShippingHub.getX() - 18.5, FieldConstants.blueShippingHub.getY() + 1))
+                .lineToConstantHeading(new Vector2d(FieldConstants.blueShippingHub.getX() - 20.5, FieldConstants.blueShippingHub.getY() + 1))
                 .build();
         switch (elementPosition) { // change transition point based on the position of the capstone (from cv) (so it doesnt displace it)
             case CENTER:
                 break;
             case LEFT:
                 toHub = drive.trajectoryBuilder(transition.end())
-                        .lineToConstantHeading(new Vector2d(FieldConstants.blueShippingHub.getX() - 20, FieldConstants.blueShippingHub.getY()))
+                        .lineToConstantHeading(new Vector2d(FieldConstants.blueShippingHub.getX() - 23, FieldConstants.blueShippingHub.getY()))
                         .build();
                 break;
             case RIGHT:
                 toHub = drive.trajectoryBuilder(transition.end())
-                        .lineToConstantHeading(new Vector2d(FieldConstants.blueShippingHub.getX() - 18, FieldConstants.blueShippingHub.getY() + 2))
+                        .lineToConstantHeading(new Vector2d(FieldConstants.blueShippingHub.getX() - 19.5, FieldConstants.blueShippingHub.getY() + 2))
                         .build();
                 break;
         }

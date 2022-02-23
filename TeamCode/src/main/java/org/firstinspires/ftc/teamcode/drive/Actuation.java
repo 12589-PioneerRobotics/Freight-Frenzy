@@ -14,36 +14,39 @@ import java.util.HashMap;
 public class Actuation {
     SampleMecanumDrive drive;
     HardwareMap hardwareMap;
-    public DcMotorEx slide, intake, carousel;
-    public Servo depositor, blocker, grabberArm, grabberClaw;
+    public DcMotorEx slide, intake;
+    public CRServo carousel;
+    public Servo depositor, blocker;
     LinearOpMode linearOpMode;
     OpMode opMode;
     HashMap<Integer, Integer> slidePositionMap;
 
+    final int slideCapping = 800;
     final int slideHeightLimit = 700;
     final int slideMidPos = 400;
     final int slideBottomPos = 200;
     final int slideInitPos = 0;
     public final double depositorClose = 0.76;
     public final double depositorOpen = 0.35;
+    public final double depositorCap = 0.5;
     final double blockerClose = 0.50;
     final double blockerOpen = 0.05;
     final double intakeVelocity = 2000.0;
     final double slidePower = 0.70;
     final double carouselPower = 0.80;
     final double intakePower = 0.7;
-    final double clawClosed = 0.0;
-    final double clawOpen = 1.0;
+    public final double ticksPerRev = 384.5;
 
     public Actuation(SampleMecanumDrive drive, LinearOpMode linearOpMode, OpMode opMode, HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
         this.drive = drive;
         this.linearOpMode = linearOpMode;
         this.opMode = opMode;
-        slidePositionMap = new HashMap<>(3);
+        slidePositionMap = new HashMap<>(4);
         slidePositionMap.put(1, slideBottomPos);
         slidePositionMap.put(2, slideMidPos);
         slidePositionMap.put(3, slideHeightLimit);
+        slidePositionMap.put(4, slideCapping);
 
         if(hardwareMap.dcMotor.contains("intake")){
             intake = hardwareMap.get(DcMotorEx.class, "intake");
@@ -61,9 +64,8 @@ public class Actuation {
 
         }
 
-        if(hardwareMap.dcMotor.contains("carousel")){
-            carousel = hardwareMap.get(DcMotorEx.class, "carousel");
-            carousel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if(hardwareMap.crservo.contains("carousel")){
+            carousel = hardwareMap.get(CRServo.class, "carousel");
         }
 
         if(hardwareMap.servo.contains("depositor")){
@@ -76,15 +78,6 @@ public class Actuation {
             blocker.setPosition(blockerOpen);
         }
 
-        if(hardwareMap.servo.contains("grabberArm")) {
-            grabberArm = hardwareMap.get(Servo.class, "grabberArm");
-            grabberArm.setPosition(0.1);
-        }
-
-        if(hardwareMap.servo.contains("grabberClaw")) {
-            grabberClaw = hardwareMap.servo.get("grabberClaw");
-            grabberClaw.setPosition(clawClosed);
-        }
     }
 
     public void blockerOpen(){
@@ -120,6 +113,7 @@ public class Actuation {
     public void intake(){
         if(intake == null)
             return;
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setVelocity(-intakeVelocity);
     }
 
@@ -130,6 +124,7 @@ public class Actuation {
     public void spitOut(){
         if(intake == null)
             return;
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intake.setVelocity(intakeVelocity);
     }
 
@@ -170,26 +165,19 @@ public class Actuation {
     public void carouselSpinBlue(){
         if(carousel == null)
             return;
-        carousel.setPower(-0.7);
+        carousel.setPower(-0.5);
     }
 
     public void stopCarousel(){
         if(carousel == null)
             return;
-        carousel.setPower(0);
+        carousel.setPower(0.0);
     }
 
-    public void setArmPosition(double pos){
-        grabberArm.setPosition(pos);
-    }
-
-    public void clawAction(){
-        if(grabberClaw.getPosition() < clawOpen) {
-            grabberClaw.setPosition(clawOpen);
-        }
-        else {
-            grabberClaw.setPosition(clawClosed);
-        }
+    public void intakeReset(){
+        intake.setTargetPositionTolerance(5);
+        intake.setTargetPosition((int) ((Math.ceil((double) intake.getCurrentPosition() / ticksPerRev)) * ticksPerRev));
+        intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
 }

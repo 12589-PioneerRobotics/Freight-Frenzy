@@ -91,6 +91,7 @@ public class TeleOpTest extends OpMode {
        }
        else { // If no triggers are pressed, stop the intake
            actuation.blockerClose();
+           actuation.intakeReset();
            actuation.stopIntake();
        }
 
@@ -116,31 +117,22 @@ public class TeleOpTest extends OpMode {
             actuation.slideReset();
 
 
-       if(gamepad2.right_trigger > 0.5) // Spin the carousel spinner right if the right trigger is pressed down
-           actuation.carouselSpinRed();
-        else if(gamepad2.left_trigger > 0.5) // Spins the carousel spinner left if the left trigger is pressed down
+       if(gamepad2.right_trigger > 0.1) // Spin the carousel spinner right if the right trigger is pressed down
+            actuation.carouselSpinRed();
+       else if(gamepad2.left_trigger > 0.1) // Spins the carousel spinner left if the left trigger is pressed down
             actuation.carouselSpinBlue();
-        else
+       else
             actuation.stopCarousel(); // Stop the carousel spinner if none of the buttons are pressed down
 
-        if(gamepadEvent2.dPadDown())
-            actuation.grabberArm.setPosition(lowArmPosition);
-        if(gamepadEvent2.dPadUp())
-            actuation.grabberArm.setPosition(middleArmPosition);
-        if(gamepadEvent2.dPadLeft())
-            actuation.grabberArm.setPosition(topArmPosition);
-
-        if(gamepadEvent2.dPadRight()) {
-            actuation.clawAction();
-        }
 
        telemetry.addData("Current Slide Position: ", slide.getCurrentPosition()); // Print the actual current slide position
-        telemetry.addData("Current Grabber Arm Position", actuation.grabberArm.getPosition());
         // Print the current locations of all the wheels
        telemetry.addData("Front Left: ", drive.leftFront.getCurrentPosition());
        telemetry.addData("Front Right:", drive.rightFront.getCurrentPosition());
        telemetry.addData("Rear Left: ", drive.leftRear.getCurrentPosition());
        telemetry.addData("Rear Right: ", drive.rightRear.getCurrentPosition());
+       telemetry.addData("Intake Position: ", actuation.intake.getCurrentPosition());
+       telemetry.addData("Intake Revolution #: ", actuation.intake.getCurrentPosition() / actuation.ticksPerRev);
        telemetry.update();
     }
 }
