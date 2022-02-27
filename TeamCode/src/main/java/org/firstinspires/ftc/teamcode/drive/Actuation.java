@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive;
 
 
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import java.util.HashMap;
 
@@ -17,6 +19,7 @@ public class Actuation {
     public DcMotorEx slide, intake;
     public CRServo carousel;
     public Servo depositor, blocker;
+    public ColorSensor colorSensor;
     LinearOpMode linearOpMode;
     OpMode opMode;
     HashMap<Integer, Integer> slidePositionMap;
@@ -24,18 +27,20 @@ public class Actuation {
     final int slideCapping = 800;
     final int slideHeightLimit = 700;
     final int slideMidPos = 400;
-    final int slideBottomPos = 200;
+    final int slideBottomPos = 300;
     final int slideInitPos = 0;
     public final double depositorClose = 0.76;
-    public final double depositorOpen = 0.35;
-    public final double depositorCap = 0.5;
+    public final double depositorOpen = 0.425;
+    public final double depositorCap = 0.385;
     final double blockerClose = 0.50;
     final double blockerOpen = 0.05;
     final double intakeVelocity = 2000.0;
     final double slidePower = 0.70;
-    final double carouselPower = 0.80;
+    final double carouselPower = 0.5;
     final double intakePower = 0.7;
     public final double ticksPerRev = 384.5;
+
+    public float hsvValues[] = {0F,0F,0F};
 
     public Actuation(SampleMecanumDrive drive, LinearOpMode linearOpMode, OpMode opMode, HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
@@ -78,6 +83,11 @@ public class Actuation {
             blocker.setPosition(blockerOpen);
         }
 
+        if(hardwareMap.colorSensor.contains("colorSensor")) {
+            colorSensor = hardwareMap.colorSensor.get("colorSensor");
+            colorSensor.enableLed(true);
+        }
+
     }
 
     public void blockerOpen(){
@@ -110,6 +120,12 @@ public class Actuation {
         depositor.setPosition(position);
     }
 
+    public void depositorCapstone() {
+        if(depositor == null)
+            return;
+        depositor.setPosition(depositorCap);
+    }
+
     public void intake(){
         if(intake == null)
             return;
@@ -140,10 +156,6 @@ public class Actuation {
         slide.setPower(-slidePower);
     }
 
-//    public void stopSlide(){
-//        slide.setPower(0);
-//    }
-
     public void slideAction(int position){
         if(slide == null)
             return;
@@ -159,13 +171,13 @@ public class Actuation {
     public void carouselSpinRed(){
         if(carousel == null)
             return;
-        carousel.setPower(0.5);
+        carousel.setPower(carouselPower);
     }
 
     public void carouselSpinBlue(){
         if(carousel == null)
             return;
-        carousel.setPower(-0.5);
+        carousel.setPower(-carouselPower);
     }
 
     public void stopCarousel(){

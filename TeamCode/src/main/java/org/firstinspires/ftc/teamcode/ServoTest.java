@@ -30,7 +30,7 @@ public class ServoTest extends OpMode{
         blocker.setPosition(0);
         telemetry.addLine(depositor.getConnectionInfo());
         telemetry.addLine(blocker.getConnectionInfo());
-        telemetry.addLine("Initialized!");
+        telemetry.addLine("Initialized!");//omkar is ugly
     }
 
     @Override

@@ -6,9 +6,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.Actuation;
 import org.firstinspires.ftc.teamcode.drive.GamepadEventPS;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+
+import android.app.Activity;
+import android.graphics.Color;
+import android.view.View;
 
 
 @TeleOp(name="TeleOp Test")
@@ -20,11 +25,12 @@ public class TeleOpTest extends OpMode {
     int targetSlidePosition;
     int resetSlidePosition;
 
-    double topArmPosition, middleArmPosition, lowArmPosition;
     double thresh;
 
     boolean depositorOpen;
     boolean slowMode;
+    boolean isFreight;
+
 
     @Override
     public void init() {
@@ -32,9 +38,6 @@ public class TeleOpTest extends OpMode {
         targetSlidePosition = 1;
         resetSlidePosition = -20; // Lower numbers mean less slack on the slides string (very unintuitive i know, but it works)
 
-        topArmPosition = 0.1;
-        middleArmPosition = 0.55;
-        lowArmPosition = 1.0;
 
         thresh = 0.01;
         gamepadEvent1 = new GamepadEventPS(gamepad1);
@@ -49,6 +52,7 @@ public class TeleOpTest extends OpMode {
         slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         actuation = new Actuation(drive, null, this, hardwareMap);
         telemetry.addLine("Initialized!");
+
     }
 
     @Override
@@ -84,11 +88,12 @@ public class TeleOpTest extends OpMode {
        if(gamepad1.right_trigger > 0.5){ // Run the intake when the right trigger is pressed down
            actuation.blockerOpen();
            actuation.intake();
+           if (isFreight) {
+               actuation.blockerClose();
+               actuation.spitOut();
+           }
        }
-       else if(gamepad1.left_trigger > 0.5) { // Run the intake backwards when the left trigger is pressed down
-           actuation.blockerClose();
-           actuation.spitOut();
-       }
+
        else { // If no triggers are pressed, stop the intake
            actuation.blockerClose();
            actuation.intakeReset();
@@ -97,24 +102,29 @@ public class TeleOpTest extends OpMode {
 
        if(gamepad2.right_bumper) // Open the depositor if the right bumper is pressed down
            actuation.depositorOpen();
+       else if(gamepad2.left_bumper)
+           actuation.depositorCapstone();
        else // Close the depositor if the right bumper isn't pressed down
            actuation.depositorClose();
 
 
-        if(gamepadEvent2.triangle()) { // Set the slides to the third position (highest)
+       if(gamepadEvent2.triangle()) { // Set the slides to the third position (highest)
             actuation.setDepositorPosition(0.75);
             actuation.slideAction(3);
         }
-        else if(gamepadEvent2.circle()) { // Set the slides to the second position (middle)
+       else if(gamepadEvent2.circle()) { // Set the slides to the second position (middle)
             actuation.setDepositorPosition(0.75);
             actuation.slideAction(2);
         }
-        else if(gamepadEvent2.cross()){ // Set the slides to the first position (bottom)
+       else if(gamepadEvent2.cross()){ // Set the slides to the first position (bottom)
             actuation.setDepositorPosition(0.75);
             actuation.slideAction(1);
-        }
-        else if(gamepadEvent2.square()) // Reset the slides to the position for intake
+       }
+       else if(gamepadEvent2.square()) // Reset the slides to the position for intake
             actuation.slideReset();
+
+       if(gamepadEvent2.dPadUp())
+            actuation.slideAction(4);
 
 
        if(gamepad2.right_trigger > 0.1) // Spin the carousel spinner right if the right trigger is pressed down
@@ -123,6 +133,15 @@ public class TeleOpTest extends OpMode {
             actuation.carouselSpinBlue();
        else
             actuation.stopCarousel(); // Stop the carousel spinner if none of the buttons are pressed down
+
+       Color.RGBToHSV(actuation.colorSensor.red() * 8, actuation.colorSensor.green() * 8, actuation.colorSensor.blue() * 8, actuation.hsvValues);
+
+       if (actuation.colorSensor.green() > 600) {
+           isFreight = true;
+       }
+       else {
+           isFreight = false;
+       }
 
 
        telemetry.addData("Current Slide Position: ", slide.getCurrentPosition()); // Print the actual current slide position
@@ -133,6 +152,11 @@ public class TeleOpTest extends OpMode {
        telemetry.addData("Rear Right: ", drive.rightRear.getCurrentPosition());
        telemetry.addData("Intake Position: ", actuation.intake.getCurrentPosition());
        telemetry.addData("Intake Revolution #: ", actuation.intake.getCurrentPosition() / actuation.ticksPerRev);
+       telemetry.addData("Color Sensor Red: ", actuation.colorSensor.red());
+       telemetry.addData("Color Sensor Blue: ", actuation.colorSensor.blue());
+       telemetry.addData("Color Sensor Green: ", actuation.colorSensor.green());
+       telemetry.addData("Color Sensor Hue: ", actuation.hsvValues[0]);
+       telemetry.addData("Freight: ", isFreight);
        telemetry.update();
     }
 }

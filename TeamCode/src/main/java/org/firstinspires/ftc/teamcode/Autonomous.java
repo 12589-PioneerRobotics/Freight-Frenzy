@@ -129,19 +129,19 @@ public class Autonomous extends LinearOpMode{
                 .lineToLinearHeading(new Pose2d(FieldConstants.transitionPoint.getX(), FieldConstants.redShippingHub.getY(), Math.toRadians(180)))
                 .build();
         Trajectory toHub = drive.trajectoryBuilder(transition.end()) // Builds the trajectory from the transition point to the shipping hub
-                .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 23, FieldConstants.redShippingHub.getY() + 6))
+                .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 25, FieldConstants.redShippingHub.getY() + 6))
                 .build();
         switch (elementPosition) { // change transition point based on the position of the capstone (from cv) (so it doesnt displace it)
             case CENTER:
                 break;
             case LEFT:
                 toHub = drive.trajectoryBuilder(transition.end())
-                        .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 24, FieldConstants.redShippingHub.getY() + 6))
+                        .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 26.5, FieldConstants.redShippingHub.getY() + 6))
                         .build();
                 break;
             case RIGHT:
                 toHub = drive.trajectoryBuilder(transition.end())
-                        .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 21, FieldConstants.redShippingHub.getY() + 6))
+                        .lineToConstantHeading(new Vector2d(FieldConstants.redShippingHub.getX() - 22, FieldConstants.redShippingHub.getY() + 6))
                         .build();
                 break;
         }
@@ -157,7 +157,7 @@ public class Autonomous extends LinearOpMode{
         sleep(200);
 
         Trajectory toDepot = drive.trajectoryBuilder(toHub.end()) // Build the trajectory to the depot from the shipping hub position
-                .lineToSplineHeading(new Pose2d(FieldConstants.transitionPoint2.getX(), FieldConstants.transitionPoint2.getY(), Math.toRadians(0)))
+                .lineToSplineHeading(new Pose2d(FieldConstants.redDepot.getX(), FieldConstants.redDepot.getY(), Math.toRadians(0)))
                 .build();
 
         Trajectory transition2 = drive.trajectoryBuilder(toDepot.end()) // A transition point from the depot to the warehouse to avoid hitting the capstone
@@ -171,8 +171,8 @@ public class Autonomous extends LinearOpMode{
 
         actuation.slideReset(); // Reset the slide position
         drive.followTrajectory(toDepot); // Follow the trajectory to the depot
-        drive.followTrajectory(transition2); // Move to the transition point
-        drive.followTrajectory(toPark); // Move to the parking spot and park
+        // drive.followTrajectory(transition2); // Move to the transition point
+        // drive.followTrajectory(toPark); // Move to the parking spot and park
     }
 
 

@@ -19,7 +19,7 @@ public class squareTrajectory extends LinearOpMode {
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));//omkar is ugly
         drive.setPoseEstimate(startPose);
 
         Trajectory side1 = drive.trajectoryBuilder(startPose)
@@ -27,8 +27,12 @@ public class squareTrajectory extends LinearOpMode {
                 .build();
 
         Trajectory side2 = drive.trajectoryBuilder(side1.end())
-                .lineToSplineHeading(new Pose2d(0, 40, Math.toRadians(180)))
+                .lineToSplineHeading(new Pose2d(0, 40, Math.toRadians(180)))//omkar is ugly
                 .build();
+        /*Rushil is
+        cute
+        */
+
 
         Trajectory side3 = drive.trajectoryBuilder(side2.end())
                 .lineToSplineHeading(new Pose2d(0, 0, Math.toRadians(-90)))
