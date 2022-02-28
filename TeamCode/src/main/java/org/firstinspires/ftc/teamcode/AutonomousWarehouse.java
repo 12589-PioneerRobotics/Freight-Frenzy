@@ -42,8 +42,8 @@ public class AutonomousWarehouse extends LinearOpMode {
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraViewId); // Initializes the camera
         camera.setPipeline(pipeline); // Sets the cameras pipeline
         drive.setPoseEstimate(FieldConstants.redWarehouseStart); // Sets the starting position for the robot
-        Trajectory transition = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .strafeTo(FieldConstants.warehouseTransition)
+        Trajectory toHub = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToSplineHeading(new Pose2d(FieldConstants.redShippingHub.getX() + 6, FieldConstants.redShippingHub.getY() - 19, Math.toRadians(-60)))
                 .build();
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -95,11 +95,78 @@ public class AutonomousWarehouse extends LinearOpMode {
 
 
         camera.closeCameraDevice(); // Close Camera
+        switch (elementPosition) {
+            case CENTER:
+                break;
+            case LEFT:
+                toHub = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .lineToSplineHeading(new Pose2d(FieldConstants.redShippingHub.getX() + 6, FieldConstants.redShippingHub.getY() - 20.5, Math.toRadians(-60)))
+                        .build();
+                break;
+            case RIGHT:
+                toHub = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .lineToSplineHeading(new Pose2d(FieldConstants.redShippingHub.getX() + 5, FieldConstants.redShippingHub.getY() - 15, Math.toRadians(-60)))
+                        .build();
+        }
+
+        drive.followTrajectory(toHub);
+        sleep(200);
+        actuation.slideAction(slidePosition);
+        sleep(500);
+        actuation.depositorOpen(); // Open the depositor
+        sleep(1500);
+        actuation.depositorClose(); // Close the depositor
+        sleep(500);
+        actuation.slideReset();
+
+        Trajectory transition = drive.trajectoryBuilder(toHub.end())
+                .lineToSplineHeading(new Pose2d(FieldConstants.warehouseTransition.getX(), FieldConstants.warehouseTransition.getY(), Math.toRadians(0)))
+                .build();
+
         drive.followTrajectory(transition);
 
-        Trajectory toHub = drive.trajectoryBuilder(transition.end())
-                .splineToSplineHeading(new Pose2d(FieldConstants.redShippingHub.getX(), FieldConstants.redShippingHub.getY() - 15), Math.toRadians(-90))
+        Trajectory toWarehouse = drive.trajectoryBuilder(transition.end())
+                .lineToSplineHeading(new Pose2d(FieldConstants.redWarehouse.getX() + 16.5, FieldConstants.redWarehouse.getY() - 25, Math.toRadians(-30)))
                 .build();
+
+        drive.followTrajectory(toWarehouse);
+
+        while (!(actuation.colorSensor.green() > 600)) {
+            actuation.intake();
+        }
+
+        actuation.blockerClose();
+        sleep(500);
+        actuation.spitOut();
+        sleep( 1000);
+        actuation.stopIntake();
+        sleep(300); //sleep after intake
+
+        Trajectory transition2 = drive.trajectoryBuilder(toWarehouse.end())
+                .lineToSplineHeading(new Pose2d(FieldConstants.warehouseTransition2.getX(), FieldConstants.warehouseTransition2.getY(), Math.toRadians(0)))
+                .build();
+
+        Trajectory transition3 = drive.trajectoryBuilder(transition2.end())
+                .lineToSplineHeading(new Pose2d(FieldConstants.warehouseTransition.getX() + 25, FieldConstants.warehouseTransition.getY() + 10, Math.toRadians(0)))
+                .build();
+        Trajectory toPark = drive.trajectoryBuilder(transition3.end())
+                .lineToConstantHeading(FieldConstants.redWarehouse)
+                .build();
+
+        drive.followTrajectory(transition2);
+        drive.followTrajectory(transition3);
+        sleep(500);
         drive.followTrajectory(toHub);
+        sleep(200);
+        actuation.slideAction(3);
+        sleep(500);
+        actuation.depositorOpen(); // Open the depositor
+        sleep(1500);
+        actuation.depositorClose(); // Close the depositor
+        sleep(500);
+        actuation.slideReset();
+        drive.followTrajectory(transition);
+        drive.followTrajectory(toPark);
+
     }
 }

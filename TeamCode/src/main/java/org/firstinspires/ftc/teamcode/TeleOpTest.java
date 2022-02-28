@@ -31,6 +31,8 @@ public class TeleOpTest extends OpMode {
     boolean slowMode;
     boolean isFreight;
 
+    int colorThreshold;
+
 
     @Override
     public void init() {
@@ -40,6 +42,7 @@ public class TeleOpTest extends OpMode {
 
 
         thresh = 0.01;
+        colorThreshold = 600;
         gamepadEvent1 = new GamepadEventPS(gamepad1);
         gamepadEvent2 = new GamepadEventPS(gamepad2);
         drive = new SampleMecanumDrive(hardwareMap);
@@ -96,8 +99,8 @@ public class TeleOpTest extends OpMode {
 
        else { // If no triggers are pressed, stop the intake
            actuation.blockerClose();
-           actuation.intakeReset();
            actuation.stopIntake();
+           actuation.intakeReset();
        }
 
        if(gamepad2.right_bumper) // Open the depositor if the right bumper is pressed down
@@ -134,9 +137,7 @@ public class TeleOpTest extends OpMode {
        else
             actuation.stopCarousel(); // Stop the carousel spinner if none of the buttons are pressed down
 
-       Color.RGBToHSV(actuation.colorSensor.red() * 8, actuation.colorSensor.green() * 8, actuation.colorSensor.blue() * 8, actuation.hsvValues);
-
-       if (actuation.colorSensor.green() > 600) {
+       if (actuation.colorSensor.green() > colorThreshold) {
            isFreight = true;
        }
        else {
@@ -152,10 +153,7 @@ public class TeleOpTest extends OpMode {
        telemetry.addData("Rear Right: ", drive.rightRear.getCurrentPosition());
        telemetry.addData("Intake Position: ", actuation.intake.getCurrentPosition());
        telemetry.addData("Intake Revolution #: ", actuation.intake.getCurrentPosition() / actuation.ticksPerRev);
-       telemetry.addData("Color Sensor Red: ", actuation.colorSensor.red());
-       telemetry.addData("Color Sensor Blue: ", actuation.colorSensor.blue());
        telemetry.addData("Color Sensor Green: ", actuation.colorSensor.green());
-       telemetry.addData("Color Sensor Hue: ", actuation.hsvValues[0]);
        telemetry.addData("Freight: ", isFreight);
        telemetry.update();
     }

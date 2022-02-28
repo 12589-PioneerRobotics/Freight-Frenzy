@@ -35,6 +35,7 @@ public class Autonomous extends LinearOpMode{
     OpenCvCamera camera;
     FieldConstants.ShippingElementPosition elementPosition;
     int slidePosition;
+    boolean depotParking;
 
 
     @Override
@@ -47,6 +48,7 @@ public class Autonomous extends LinearOpMode{
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraViewId); // Initializes the camera
         camera.setPipeline(pipeline); // Sets the cameras pipeline
         drive.setPoseEstimate(FieldConstants.redCarouselStart); // Sets the starting position for the robot
+        depotParking = false;
         Trajectory toCarousel = drive.trajectoryBuilder(FieldConstants.redCarouselStart) // Build the trajectory to move from the starting position to the carousel
                 .lineToLinearHeading(FieldConstants.redCarousel)
                 .build();
@@ -117,7 +119,7 @@ public class Autonomous extends LinearOpMode{
 
 
         camera.closeCameraDevice(); // Close Camera
-        sleep(5000);
+        // sleep(5000);
         drive.followTrajectory(toCarousel); // move to carousel
 
         actuation.carouselSpinRed(); // Spin the carousel spinner for the red side
@@ -156,23 +158,32 @@ public class Autonomous extends LinearOpMode{
         actuation.depositorClose(); // Close the depositor
         sleep(200);
 
+        Trajectory transition2 = drive.trajectoryBuilder(toHub.end()) // Build the trajectory to the depot from the shipping hub position
+                .lineToSplineHeading(new Pose2d(FieldConstants.transitionPoint2.getX(), FieldConstants.transitionPoint2.getY(), Math.toRadians(0)))
+                .build();
         Trajectory toDepot = drive.trajectoryBuilder(toHub.end()) // Build the trajectory to the depot from the shipping hub position
-                .lineToSplineHeading(new Pose2d(FieldConstants.redDepot.getX(), FieldConstants.redDepot.getY(), Math.toRadians(0)))
+                .strafeTo(FieldConstants.redDepot)
                 .build();
 
-        Trajectory transition2 = drive.trajectoryBuilder(toDepot.end()) // A transition point from the depot to the warehouse to avoid hitting the capstone
+        Trajectory transition3 = drive.trajectoryBuilder(toDepot.end()) // A transition point from the depot to the warehouse to avoid hitting the capstone
                 .strafeTo(FieldConstants.transitionPoint3)
                 .build();
 
-        Trajectory toPark = drive.trajectoryBuilder(transition2.end()) // Build the trajectory from the transition point to the parking spot
+        Trajectory toPark = drive.trajectoryBuilder(transition3.end()) // Build the trajectory from the transition point to the parking spot
                 .splineToConstantHeading(FieldConstants.evasiveRed, Math.toRadians(0))
                 .splineToConstantHeading(FieldConstants.redWarehouse, Math.toRadians(0))
                 .build();
 
         actuation.slideReset(); // Reset the slide position
-        drive.followTrajectory(toDepot); // Follow the trajectory to the depot
-        // drive.followTrajectory(transition2); // Move to the transition point
-        // drive.followTrajectory(toPark); // Move to the parking spot and park
+        drive.followTrajectory(transition2);
+        if (depotParking) {
+            drive.followTrajectory(toDepot); // Follow the trajectory to the depot
+        }
+        else {
+            drive.followTrajectory(transition3); // Move to the transition point
+            drive.followTrajectory(toPark); // Move to the parking spot and park
+        }
+
     }
 
 

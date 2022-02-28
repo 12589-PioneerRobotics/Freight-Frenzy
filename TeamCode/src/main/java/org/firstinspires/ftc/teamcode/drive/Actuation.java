@@ -29,7 +29,7 @@ public class Actuation {
     final int slideMidPos = 400;
     final int slideBottomPos = 300;
     final int slideInitPos = 0;
-    public final double depositorClose = 0.76;
+    public final double depositorClose = 0.79;
     public final double depositorOpen = 0.425;
     public final double depositorCap = 0.385;
     final double blockerClose = 0.50;
@@ -40,7 +40,6 @@ public class Actuation {
     final double intakePower = 0.7;
     public final double ticksPerRev = 384.5;
 
-    public float hsvValues[] = {0F,0F,0F};
 
     public Actuation(SampleMecanumDrive drive, LinearOpMode linearOpMode, OpMode opMode, HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
@@ -187,7 +186,7 @@ public class Actuation {
     }
 
     public void intakeReset(){
-        intake.setTargetPositionTolerance(5);
+        intake.setTargetPositionTolerance(10);
         intake.setTargetPosition((int) ((Math.ceil((double) intake.getCurrentPosition() / ticksPerRev)) * ticksPerRev));
         intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
