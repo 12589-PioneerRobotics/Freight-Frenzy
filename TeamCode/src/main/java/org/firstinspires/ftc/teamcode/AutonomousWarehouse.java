@@ -31,7 +31,7 @@ public class AutonomousWarehouse extends LinearOpMode {
     WebcamName webcamName;
     OpenCvCamera camera;
     FieldConstants.ShippingElementPosition elementPosition;
-    int slidePosition;
+    int slidePosition;//omkar is ugly
     @Override
     public void runOpMode() throws InterruptedException {
         drive = new SampleMecanumDrive(hardwareMap); // Initializes roadrunner
@@ -126,7 +126,7 @@ public class AutonomousWarehouse extends LinearOpMode {
         drive.followTrajectory(transition);
 
         Trajectory toWarehouse = drive.trajectoryBuilder(transition.end())
-                .lineToSplineHeading(new Pose2d(FieldConstants.redWarehouse.getX() + 16.5, FieldConstants.redWarehouse.getY() - 25, Math.toRadians(-30)))
+                .lineToSplineHeading(new Pose2d(FieldConstants.redWarehouse.getX() + 16.5, FieldConstants.redWarehouse.getY() - 30, Math.toRadians(-30)))
                 .build();
 
         drive.followTrajectory(toWarehouse);
@@ -142,21 +142,26 @@ public class AutonomousWarehouse extends LinearOpMode {
         actuation.stopIntake();
         sleep(300); //sleep after intake
 
-        Trajectory transition2 = drive.trajectoryBuilder(toWarehouse.end())
+        Trajectory transition2 = drive.trajectoryBuilder(toWarehouse.end())// omkar is ugly
                 .lineToSplineHeading(new Pose2d(FieldConstants.warehouseTransition2.getX(), FieldConstants.warehouseTransition2.getY(), Math.toRadians(0)))
                 .build();
 
-        Trajectory transition3 = drive.trajectoryBuilder(transition2.end())
-                .lineToSplineHeading(new Pose2d(FieldConstants.warehouseTransition.getX() + 25, FieldConstants.warehouseTransition.getY() + 10, Math.toRadians(0)))
+        Trajectory transition3 = drive.trajectoryBuilder(transition2.end())//omkar is ugly
+                .lineToSplineHeading(new Pose2d(FieldConstants.warehouseTransition.getX() + 20, FieldConstants.warehouseTransition.getY() + 5, Math.toRadians(0)))
                 .build();
-        Trajectory toPark = drive.trajectoryBuilder(transition3.end())
-                .lineToConstantHeading(FieldConstants.redWarehouse)
+
+        Trajectory toHub2 = drive.trajectoryBuilder(transition3.end())
+                .lineToSplineHeading(new Pose2d(FieldConstants.redShippingHub.getX() + 12, FieldConstants.redShippingHub.getY() - 14, Math.toRadians(-60)))
+                .build();
+
+        Trajectory toPark = drive.trajectoryBuilder(transition.end())
+                .lineToConstantHeading(new Vector2d(FieldConstants.redWarehouse.getX() + 10, FieldConstants.redWarehouse.getY() - 15))
                 .build();
 
         drive.followTrajectory(transition2);
         drive.followTrajectory(transition3);
         sleep(500);
-        drive.followTrajectory(toHub);
+        drive.followTrajectory(toHub2);
         sleep(200);
         actuation.slideAction(3);
         sleep(500);

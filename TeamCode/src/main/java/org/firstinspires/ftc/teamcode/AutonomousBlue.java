@@ -1,29 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
-import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.SwitchableCamera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.Actuation;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
-
-import java.lang.reflect.Field;
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous
 public class AutonomousBlue extends LinearOpMode{
@@ -35,6 +22,7 @@ public class AutonomousBlue extends LinearOpMode{
     OpenCvCamera camera;
     FieldConstants.ShippingElementPosition elementPosition;
     int slidePosition;
+    boolean depotParking;
 
 
     @Override
@@ -47,6 +35,7 @@ public class AutonomousBlue extends LinearOpMode{
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraViewId); // Initializes the camera
         camera.setPipeline(pipeline); // Sets the cameras pipeline
         drive.setPoseEstimate(FieldConstants.blueCarouselStart); // Sets the starting position for the robot
+        depotParking = false;
         Trajectory toCarousel = drive.trajectoryBuilder(FieldConstants.blueCarouselStart) // Build the trajectory to move from the starting position to the carousel
                 .lineToLinearHeading(FieldConstants.blueCarousel)
                 .build();
@@ -140,22 +129,31 @@ public class AutonomousBlue extends LinearOpMode{
         actuation.depositorClose(); // Close the depositor
         sleep(200);
 
+        Trajectory transition2 = drive.trajectoryBuilder(toHub.end())
+                .lineToSplineHeading(new Pose2d(FieldConstants.transitionPointBlue2.getX(), FieldConstants.transitionPointBlue2.getY(), Math.toRadians(0)))
+                .build();
+
         Trajectory toDepot = drive.trajectoryBuilder(toHub.end()) // Build the trajectory to the depot from the shipping hub position
                 .lineToSplineHeading(new Pose2d(FieldConstants.blueDepot.getX(), FieldConstants.blueDepot.getY(), Math.toRadians(0)))
                 .build();
 
-        Trajectory transition2 = drive.trajectoryBuilder(toDepot.end()) // A transition point from the depot to the warehouse to avoid hitting the capstone
+        Trajectory transition3 = drive.trajectoryBuilder(toDepot.end()) // A transition point from the depot to the warehouse to avoid hitting the capstone
                 .strafeTo(FieldConstants.transitionPointBlue3)
                 .build();
 
-        Trajectory toPark = drive.trajectoryBuilder(transition2.end())
+        Trajectory toPark = drive.trajectoryBuilder(transition3.end())
                 .splineToConstantHeading(FieldConstants.evasiveBlue, Math.toRadians(0))// Build the trajectory from the transition point to the parking spot
                 .splineToConstantHeading(FieldConstants.blueWarehouse, Math.toRadians(0))
                 .build();
 
         actuation.slideReset(); // Reset the slide position
-        drive.followTrajectory(toDepot); // Follow the trajectory to the depot
-        //drive.followTrajectory(transition2); // Move to the transition point
-        //drive.followTrajectory(toPark); // Move to the parking spot and park
+        drive.followTrajectory(transition2); // Follow the trajectory to the depot
+        if (depotParking) {
+            drive.followTrajectory(toDepot); // Follow the trajectory to the depot
+        }
+        else {
+            drive.followTrajectory(transition3); // Move to the transition point
+            drive.followTrajectory(toPark); // Move to the parking spot and park
+        }
     }
 }

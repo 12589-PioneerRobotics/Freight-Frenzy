@@ -49,6 +49,6 @@ public class FieldConstants {
     public static Vector2d evasiveRed = new Vector2d(15, -32);
     public static Vector2d evasiveBlue = new Vector2d(34, 42);
     public static Vector2d warehouseTransition = new Vector2d(-6, -50);
-    public static Vector2d warehouseTransition2 = new Vector2d(55, -40);
+    public static Vector2d warehouseTransition2 = new Vector2d(55, -41);
 }
 
