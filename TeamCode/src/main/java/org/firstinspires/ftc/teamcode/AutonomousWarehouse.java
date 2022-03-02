@@ -131,13 +131,15 @@ public class AutonomousWarehouse extends LinearOpMode {
 
         drive.followTrajectory(toWarehouse);
 
+
         while (!(actuation.colorSensor.green() > 600)) {
-            actuation.intake();
+            actuation.intake(false);
+
         }
 
         actuation.blockerClose();
         sleep(500);
-        actuation.spitOut();
+        actuation.spitOut(false);
         sleep( 1000);
         actuation.stopIntake();
         sleep(300); //sleep after intake

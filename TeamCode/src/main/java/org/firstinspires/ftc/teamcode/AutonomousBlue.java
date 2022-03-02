@@ -133,11 +133,11 @@ public class AutonomousBlue extends LinearOpMode{
                 .lineToSplineHeading(new Pose2d(FieldConstants.transitionPointBlue2.getX(), FieldConstants.transitionPointBlue2.getY(), Math.toRadians(0)))
                 .build();
 
-        Trajectory toDepot = drive.trajectoryBuilder(toHub.end()) // Build the trajectory to the depot from the shipping hub position
+        Trajectory toDepot = drive.trajectoryBuilder(transition2.end()) // Build the trajectory to the depot from the shipping hub position
                 .lineToSplineHeading(new Pose2d(FieldConstants.blueDepot.getX(), FieldConstants.blueDepot.getY(), Math.toRadians(0)))
                 .build();
 
-        Trajectory transition3 = drive.trajectoryBuilder(toDepot.end()) // A transition point from the depot to the warehouse to avoid hitting the capstone
+        Trajectory transition3 = drive.trajectoryBuilder(transition2.end()) // A transition point from the depot to the warehouse to avoid hitting the capstone
                 .strafeTo(FieldConstants.transitionPointBlue3)
                 .build();
 

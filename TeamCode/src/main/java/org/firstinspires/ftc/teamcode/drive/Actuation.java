@@ -25,7 +25,7 @@ public class Actuation {
     HashMap<Integer, Integer> slidePositionMap;
 
     final int slideCapping = 800;
-    final int slideHeightLimit = 700;
+    final int slideHeightLimit = 750;
     final int slideMidPos = 400;
     final int slideBottomPos = 300;
     final int slideInitPos = 0;
@@ -52,10 +52,11 @@ public class Actuation {
         slidePositionMap.put(3, slideHeightLimit);
         slidePositionMap.put(4, slideCapping);
 
-        if(hardwareMap.dcMotor.contains("intake")){
+        if(hardwareMap.dcMotor.contains("intake")) {
             intake = hardwareMap.get(DcMotorEx.class, "intake");
-            intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            //intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
         if(hardwareMap.dcMotor.contains("slide")){
@@ -125,22 +126,28 @@ public class Actuation {
         depositor.setPosition(depositorCap);
     }
 
-    public void intake(){
+    public void intake(boolean slowMode){
         if(intake == null)
             return;
-        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intake.setVelocity(-intakeVelocity);
+        //intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if(!slowMode)
+            intake.setVelocity(-intakeVelocity);
+        else
+            intake.setVelocity(-intakeVelocity * 0.15);
     }
 
     public void stopIntake(){
         intake.setPower(0);
     }
 
-    public void spitOut(){
+    public void spitOut(boolean slowMode){
         if(intake == null)
             return;
-        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intake.setVelocity(intakeVelocity);
+        //intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if(!slowMode)
+            intake.setVelocity(intakeVelocity);
+        else
+            intake.setVelocity(intakeVelocity * 0.15);
     }
 
     public void slideUp(){
@@ -186,9 +193,8 @@ public class Actuation {
     }
 
     public void intakeReset(){
-        intake.setTargetPositionTolerance(10);
-        intake.setTargetPosition((int) ((Math.ceil((double) intake.getCurrentPosition() / ticksPerRev)) * ticksPerRev));
-        intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intake.setTargetPositionTolerance(5);
+        intake.setTargetPosition((int) ((Math.round((double) intake.getCurrentPosition() / ticksPerRev)) * ticksPerRev));
+        //intake.setMode(DcMotor.RunMode.AMONG_US);
     }
-
 }

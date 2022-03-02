@@ -28,14 +28,16 @@ public class TeleOpTest extends OpMode {
     double thresh;
 
     boolean depositorOpen;
-    boolean slowMode;
+    boolean chassisSlowMode;
     boolean isFreight;
+    boolean intakeSlowMode;
 
     int colorThreshold;
 
 
     @Override
     public void init() {
+        intakeSlowMode = false;
         depositorOpen = false;
         targetSlidePosition = 1;
         resetSlidePosition = -20; // Lower numbers mean less slack on the slides string (very unintuitive i know, but it works)
@@ -46,7 +48,7 @@ public class TeleOpTest extends OpMode {
         gamepadEvent1 = new GamepadEventPS(gamepad1);
         gamepadEvent2 = new GamepadEventPS(gamepad2);
         drive = new SampleMecanumDrive(hardwareMap);
-        slowMode = false;
+        chassisSlowMode = false;
         slide = hardwareMap.get(DcMotorEx.class, "slide");
         slide.setTargetPosition(targetSlidePosition);
         slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -60,7 +62,7 @@ public class TeleOpTest extends OpMode {
 
     @Override
     public void loop() {
-            if(!slowMode) { // If the slowmode is toggled on, the robot will move twice as slow
+            if(!chassisSlowMode) { // If the slowmode is toggled on, the robot will move twice as slow
                 drive.setWeightedDrivePower(
                         new Pose2d(
                                 -gamepad1.right_stick_y,
@@ -85,22 +87,28 @@ public class TeleOpTest extends OpMode {
         telemetry.addData("Y: ", gamepad1.right_stick_y);
 
         if(gamepadEvent1.rightStickButton()) { // If the right stick button is clicked down, toggle the slowmode
-            slowMode = !slowMode;
+            chassisSlowMode = !chassisSlowMode;
         }
 
-       if(gamepad1.right_trigger > 0.5){ // Run the intake when the right trigger is pressed down
-           actuation.blockerOpen();
-           actuation.intake();
-           if (isFreight) {
-               actuation.blockerClose();
-               actuation.spitOut();
-           }
-       }
+        if(gamepadEvent1.rightBumper())
+            intakeSlowMode = !intakeSlowMode;
 
+       if(gamepad1.right_trigger > 0.5 && !isFreight){ // Run the intake when the right trigger is pressed down
+           actuation.blockerOpen();
+           actuation.intake(intakeSlowMode);
+       }
+       else if(gamepad1.right_trigger > 0.5){
+           actuation.blockerClose();
+           actuation.spitOut(intakeSlowMode);
+       }
+       else if(gamepad1.left_trigger > 0.5){
+           actuation.blockerClose();
+           actuation.spitOut(intakeSlowMode);
+       }
        else { // If no triggers are pressed, stop the intake
            actuation.blockerClose();
+           //actuation.intakeReset();
            actuation.stopIntake();
-           actuation.intakeReset();
        }
 
        if(gamepad2.right_bumper) // Open the depositor if the right bumper is pressed down
@@ -137,24 +145,15 @@ public class TeleOpTest extends OpMode {
        else
             actuation.stopCarousel(); // Stop the carousel spinner if none of the buttons are pressed down
 
-       if (actuation.colorSensor.green() > colorThreshold) {
-           isFreight = true;
-       }
-       else {
-           isFreight = false;
-       }
+        isFreight = actuation.colorSensor.green() >= colorThreshold;
 
 
        telemetry.addData("Current Slide Position: ", slide.getCurrentPosition()); // Print the actual current slide position
         // Print the current locations of all the wheels
-       telemetry.addData("Front Left: ", drive.leftFront.getCurrentPosition());
-       telemetry.addData("Front Right:", drive.rightFront.getCurrentPosition());
-       telemetry.addData("Rear Left: ", drive.leftRear.getCurrentPosition());
-       telemetry.addData("Rear Right: ", drive.rightRear.getCurrentPosition());
-       telemetry.addData("Intake Position: ", actuation.intake.getCurrentPosition());
-       telemetry.addData("Intake Revolution #: ", actuation.intake.getCurrentPosition() / actuation.ticksPerRev);
        telemetry.addData("Color Sensor Green: ", actuation.colorSensor.green());
        telemetry.addData("Freight: ", isFreight);
+       telemetry.addData("Intake Slow Mode: ", intakeSlowMode);
+       telemetry.addData("Chassis Slow Mode: ", chassisSlowMode);
        telemetry.update();
     }
 }

@@ -157,11 +157,11 @@ public class Autonomous extends LinearOpMode{
         Trajectory transition2 = drive.trajectoryBuilder(toHub.end()) // Build the trajectory to the depot from the shipping hub position
                 .lineToSplineHeading(new Pose2d(FieldConstants.transitionPoint2.getX(), FieldConstants.transitionPoint2.getY(), Math.toRadians(0)))
                 .build();
-        Trajectory toDepot = drive.trajectoryBuilder(toHub.end()) // Build the trajectory to the depot from the shipping hub position
+        Trajectory toDepot = drive.trajectoryBuilder(transition2.end()) // Build the trajectory to the depot from the shipping hub position
                 .strafeTo(FieldConstants.redDepot)
                 .build();
 
-        Trajectory transition3 = drive.trajectoryBuilder(toDepot.end()) // A transition point from the depot to the warehouse to avoid hitting the capstone
+        Trajectory transition3 = drive.trajectoryBuilder(transition2.end()) // A transition point from the depot to the warehouse to avoid hitting the capstone
                 .strafeTo(FieldConstants.transitionPoint3)
                 .build();
 
