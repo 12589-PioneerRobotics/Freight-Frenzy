@@ -91,7 +91,7 @@ public class TeleOpTest extends OpMode {
         }
 
 
-       if(gamepad1.right_trigger > 0.5 && !isFreight){ // Run the intake when the right trigger is pressed down
+       if((gamepad1.right_trigger > 0.5 && !isFreight) || gamepad1.left_bumper){ // Run the intake when the right trigger is pressed down
            actuation.blockerOpen();
            actuation.intake(false);
        }
