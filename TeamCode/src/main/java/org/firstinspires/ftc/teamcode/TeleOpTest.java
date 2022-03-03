@@ -90,21 +90,21 @@ public class TeleOpTest extends OpMode {
             chassisSlowMode = !chassisSlowMode;
         }
 
-        if(gamepadEvent1.rightBumper())
-            intakeSlowMode = !intakeSlowMode;
 
        if(gamepad1.right_trigger > 0.5 && !isFreight){ // Run the intake when the right trigger is pressed down
            actuation.blockerOpen();
-           actuation.intake(intakeSlowMode);
+           actuation.intake(false);
        }
        else if(gamepad1.right_trigger > 0.5){
            actuation.blockerClose();
-           actuation.spitOut(intakeSlowMode);
+           actuation.spitOut(false);
        }
        else if(gamepad1.left_trigger > 0.5){
            actuation.blockerClose();
-           actuation.spitOut(intakeSlowMode);
+           actuation.spitOut(false);
        }
+       else if(gamepad1.right_bumper)
+           actuation.intake(true);
        else { // If no triggers are pressed, stop the intake
            actuation.blockerClose();
            //actuation.intakeReset();
